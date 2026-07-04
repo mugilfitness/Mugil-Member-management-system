@@ -15,8 +15,8 @@ const reportRoutes =
 
 const app = express();
 const allowedOrigins = [
-  "http://localhost:5173"
- 
+  "http://localhost:5173",
+ "https://mugil-member-management-system.onrender.com/"
 ];
 
 app.use(express.json());
