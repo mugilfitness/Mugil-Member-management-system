@@ -16,7 +16,9 @@ const reportRoutes =
 const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
-"https://mugil23-fitness.vercel.app"
+"https://mugil23-fitness.vercel.app",
+ "https://mugilfitness.co.in",
+  "https://www.mugilfitness.co.in",
 ];
 
 app.use(express.json());
