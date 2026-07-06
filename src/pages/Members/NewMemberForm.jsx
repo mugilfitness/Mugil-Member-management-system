@@ -118,7 +118,7 @@ function NewMemberForm({ onBack }) {
       newErrors.email = true;
     }
 
-    if (!formData.address.trim() || formData.address.trim().length < 10) {
+    if (!formData.address.trim() || formData.address.trim().length < 3) {
       newErrors.address = true;
     }
 
@@ -188,7 +188,7 @@ function NewMemberForm({ onBack }) {
       newErrors.email = true;
     }
 
-    if (!formData.address.trim() || formData.address.trim().length < 10) {
+    if (!formData.address.trim() || formData.address.trim().length < 3) {
       newErrors.address = true;
     }
 
@@ -636,7 +636,7 @@ function NewMemberForm({ onBack }) {
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  minLength={10}
+                  minLength={3}
                   maxLength={250}
                   placeholder="ENTER COMPLETE ADDRESS"
                   className={`w-full bg-white border rounded-xl px-3 py-2.5 text-xs font-bold uppercase text-slate-800 outline-none transition-all ${
