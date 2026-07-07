@@ -199,20 +199,22 @@ function Dashboard() {
   const growth = currentBranch === "MUGIL_FITNESS" ? 18.3 : 12.8;
 
   /* ── Pending Payments ── */
-  const pendingMembers = filteredMembers
-    .filter(
-      (m) =>
-        Number(m.balanceAmount || 0) > 0 ||
-        m.paymentStatus === "Balance Pending",
-    )
-    .sort((a, b) => Number(b.balanceAmount || 0) - Number(a.balanceAmount || 0))
-    .slice(0, 3);
+const allPendingMembers = filteredMembers
+  .filter(
+    (m) =>
+      Number(m.balanceAmount || 0) > 0 ||
+      m.paymentStatus === "Balance Pending"
+  )
+  .sort((a, b) => Number(b.balanceAmount || 0) - Number(a.balanceAmount || 0));
 
-  const totalPendingAmount = pendingMembers.reduce(
-    (total, m) => total + Number(m.balanceAmount || 0),
-    0,
-  );
-  const pendingCount = pendingMembers.length;
+const pendingMembers = allPendingMembers.slice(0, 5);
+
+const totalPendingAmount = allPendingMembers.reduce(
+  (total, m) => total + Number(m.balanceAmount || 0),
+  0
+);
+
+const pendingCount = allPendingMembers.length;
 
   /* ── Loading ── */
   if (loading) {
@@ -368,11 +370,7 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* ── 3-COLUMN SECTION ── */}
-          {/* ── 3-COLUMN SECTION (NEW LAYOUT) ── */}
-          {/* TOP ROW: Revenue Chart (wider left) + Expiry Alerts (narrower right) */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-            {/* ── COL SPAN 3: REVENUE CHART ── */}
             <div className="lg:col-span-3 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
               <div>
                 {/* Header */}
@@ -664,7 +662,7 @@ function Dashboard() {
               {/* Member list */}
               <div className="flex flex-col gap-1.5 flex-1">
                 {pendingMembers.length > 0 ? (
-                  pendingMembers.slice(0, 4).map((item, idx) => (
+                pendingMembers.map((item, idx) => (
                     <div
                       key={idx}
                       className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 text-xs"
@@ -692,19 +690,14 @@ function Dashboard() {
               </div>
 
               {/* Footer */}
-              <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
-                <div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                    Total Pending
-                  </span>
-                  <p className="text-[10px] text-slate-400 mt-0.5">
-                    {pendingCount} Members
-                  </p>
-                </div>
-                <span className="text-red-500 font-mono font-black text-sm">
-                  ₹{totalPendingAmount.toLocaleString()}
-                </span>
-              </div>
+           <div className="pt-3 border-t border-slate-100 flex justify-end">
+  <button
+    onClick={() => navigate("/admin/fees?view=PENDING")}
+    className="cursor-pointer text-sm font-bold text-violet-600 hover:text-violet-700 transition-colors"
+  >
+    View All →
+  </button>
+</div>
             </div>
           </div>
 
