@@ -29,13 +29,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem("admin");
-      localStorage.removeItem("adminRole");
+ if (
+  error.response?.status === 401 &&
+  !error.config.url.includes("/auth/login")
+) {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("admin");
+  localStorage.removeItem("adminRole");
 
-      // window.location.href = "/adminLogin";
-    }
+  window.location.href = "/adminLogin";
+}
 
     return Promise.reject(error);
   }
