@@ -34,7 +34,7 @@ api.interceptors.response.use(
       localStorage.removeItem("admin");
       localStorage.removeItem("adminRole");
 
-      window.location.href = "/adminLogin";
+      // window.location.href = "/adminLogin";
     }
 
     return Promise.reject(error);
