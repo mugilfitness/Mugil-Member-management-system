@@ -421,17 +421,20 @@ const getPendingFeesReport = async (req, res) => {
     );
 
     const members = (await Member.find(filter).lean())
+      // .filter((member) => {
+      //   if (getMemberStatus(member.expiryDate) === "Expired") {
+      //     return false;
+      //   }
+
+      //   if (period === "overall") return true;
+
+      //   return (member.paymentHistory || []).some((payment) =>
+      //     isDateInPeriod(payment.paymentDate, period)
+      //   );
+      // })
       .filter((member) => {
-        if (getMemberStatus(member.expiryDate) === "Expired") {
-          return false;
-        }
-
-        if (period === "overall") return true;
-
-        return (member.paymentHistory || []).some((payment) =>
-          isDateInPeriod(payment.paymentDate, period)
-        );
-      })
+    return getMemberStatus(member.expiryDate) !== "Expired";
+})
       .sort(
         (a, b) =>
           Number(b.balanceAmount || 0) -

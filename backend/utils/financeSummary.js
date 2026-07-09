@@ -18,15 +18,12 @@ const calculateFinance = (members, period = "overall") => {
             activeMembers++;
         }
 
-if (
-  status !== "Expired" &&
-  (period === "overall" ||
-    (member.paymentHistory || []).some((payment) =>
-      isDateInPeriod(payment.paymentDate, period)
-    ))
-) {
-  outstanding += Number(member.balanceAmount || 0);
-}
+
+        if (status !== "Expired") {
+            outstanding += Number(member.balanceAmount || 0);
+
+
+        }
 
 
         if (Number(member.balanceAmount || 0) > highestDue) {
