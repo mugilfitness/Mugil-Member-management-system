@@ -98,11 +98,10 @@ const REPORT_CARDS = [
   {
     id: "DOC_04",
     name: "Renewals Due",
-    desc: "Members whose membership has already expired.",
+    desc: "Members whose membership expires in the next 7 days.",
     icon: <FiRefreshCw />,
     api: "/api/v1/reports/expiring-members",
     type: "expiring-members",
-     extraParams: { includeExpired: "true" },
   },
 ];
 
@@ -441,52 +440,57 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
 
   // ── EXPIRING MEMBERS ───────────────────────────────────────────────────────
   if (reportType === "expiring-members") {
-    const totalExpired = rows.length;
+    const totalExpiring = rows.length;
 
- // How long ago expired
-  const expiredToday = rows.filter((m) => {
-    const diff = Math.ceil((new Date(m.expiryDate) - today) / 86400000);
-    return diff === 0; // today exactly
-  }).length;
+    // expiring today
+    const expiringToday = rows.filter((m) => {
+      if (!m.expiryDate) return false;
+      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
+      return diff === 0;
+    }).length;
 
-  const expiredThisWeek = rows.filter((m) => {
-    const diff = Math.ceil((new Date(m.expiryDate) - today) / 86400000);
-    return diff >= -7 && diff < 0;
-  }).length;
+    // expiring in 1-3 days
+    const expiring3Days = rows.filter((m) => {
+      if (!m.expiryDate) return false;
+      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
+      return diff >= 1 && diff <= 3;
+    }).length;
 
-  const expiredOlder = rows.filter((m) => {
-    const diff = Math.ceil((new Date(m.expiryDate) - today) / 86400000);
-    return diff < -7;
-  }).length;
+    // expiring in 4-7 days
+    const expiring7Days = rows.filter((m) => {
+      if (!m.expiryDate) return false;
+      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
+      return diff >= 4 && diff <= 7;
+    }).length;
 
     return [
       {
-        label: "Total Expired",
-        value: `${totalExpired}`,
+        label: "Expiring This Week",
+        value: `${totalExpiring}`,
         bgColor: [230, 241, 251],
         border: [133, 183, 235],
         label_c: [24, 95, 165],
         value_c: [12, 68, 124],
       },
       {
-         label: "Expired Today", 
-       value: `${expiredToday}`,
+        label: "Expiring Today",
+        value: `${expiringToday}`,
         bgColor: [252, 235, 235],
         border: [240, 149, 149],
         label_c: [163, 45, 45],
         value_c: [121, 31, 31],
       },
       {
-        label: "Expired This Week",
-        value: `${expiredThisWeek}`,
+        label: "Next 1–3 Days",
+        value: `${expiring3Days}`,
         bgColor: [250, 238, 218],
         border: [239, 159, 39],
         label_c: [133, 79, 11],
         value_c: [99, 56, 6],
       },
       {
-        label: "Expired Over a Week",
-       value: `${expiredOlder}`,
+        label: "Next 4–7 Days",
+        value: `${expiring7Days}`,
         bgColor: [234, 243, 222],
         border: [151, 196, 89],
         label_c: [59, 109, 17],
