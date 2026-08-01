@@ -621,33 +621,53 @@ function FeeManagement() {
     generateReportPDF(transactions, "Full Report", "Full-Report.pdf");
   };
 
-  const export30DaysPDF = () => {
-    const cutoffDate = new Date();
+const export30DaysPDF = () => {
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - 30);
 
-    cutoffDate.setDate(cutoffDate.getDate() - 30);
-
-    const filtered = transactions.filter((member) => {
-      return member.paymentHistory?.some(
-        (payment) => new Date(payment.paymentDate) >= cutoffDate,
+  const filtered = transactions
+    .map((member) => {
+      const payments = (member.paymentHistory || []).filter(
+        (payment) => new Date(payment.paymentDate) >= cutoffDate
       );
-    });
 
-    generateReportPDF(filtered, "Last 30 Days Report", "30-Days-Report.pdf");
-  };
+      return {
+        ...member,
+        paymentHistory: payments,
+      };
+    })
+    .filter((member) => member.paymentHistory.length > 0);
 
-  const export60DaysPDF = () => {
-    const cutoffDate = new Date();
+  generateReportPDF(
+    filtered,
+    "Last 30 Days Report",
+    "30-Days-Report.pdf"
+  );
+};
 
-    cutoffDate.setDate(cutoffDate.getDate() - 60);
+const export60DaysPDF = () => {
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - 60);
 
-    const filtered = transactions.filter((member) => {
-      return member.paymentHistory?.some(
-        (payment) => new Date(payment.paymentDate) >= cutoffDate,
+  const filtered = transactions
+    .map((member) => {
+      const payments = (member.paymentHistory || []).filter(
+        (payment) => new Date(payment.paymentDate) >= cutoffDate
       );
-    });
 
-    generateReportPDF(filtered, "Last 60 Days Report", "60-Days-Report.pdf");
-  };
+      return {
+        ...member,
+        paymentHistory: payments,
+      };
+    })
+    .filter((member) => member.paymentHistory.length > 0);
+
+  generateReportPDF(
+    filtered,
+    "Last 60 Days Report",
+    "60-Days-Report.pdf"
+  );
+};
 
   const savePayment = async () => {
     if (!selectedMember) {
@@ -1284,7 +1304,6 @@ hover:bg-violet-50
 
                       <td className="px-6 py-4 text-center">
                         <div className="flex gap-2 justify-center">
-                          {/* ✅ FIXED: Added ID to the Collect button route */}
                           <button
                             onClick={() =>
                               navigate(`/admin/payments/collect/${tx._id}`)
