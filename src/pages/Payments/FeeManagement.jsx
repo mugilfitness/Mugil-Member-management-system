@@ -648,6 +648,7 @@ const export30DaysPDF = () => {
         paymentHistory: payments,
       };
     })
+    .filter((member) => member.paymentHistory.length > 0);
 
   generateReportPDF(
     filtered,
@@ -672,6 +673,8 @@ const export60DaysPDF = () => {
         paymentHistory: payments,
       };
     })
+
+     .filter((member) => member.paymentHistory.length > 0);
 
   generateReportPDF(
     filtered,
