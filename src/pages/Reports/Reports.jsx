@@ -97,8 +97,8 @@ const REPORT_CARDS = [
   },
   {
     id: "DOC_04",
-    name: "Renewals Due",
-    desc: "Members whose membership expires in the next 7 days.",
+     name: "Expired Members",
+   desc: "Members whose membership has already expired.",
     icon: <FiRefreshCw />,
     api: "/api/v1/reports/expiring-members",
     type: "expiring-members",
