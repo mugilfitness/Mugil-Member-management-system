@@ -285,6 +285,18 @@ function FeeManagement() {
     return daysLeft < 0 && daysLeft >= -180;
   }).length;
 
+  const totalExpiredMembers = transactions.filter((member) => {
+  if (!member.expiryDate) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const expiry = new Date(member.expiryDate);
+  expiry.setHours(0, 0, 0, 0);
+
+  return expiry < today;
+}).length;
+
   const todayCollection = transactions.reduce((sum, member) => {
     const todayPayments =
       member.paymentHistory
@@ -418,7 +430,7 @@ function FeeManagement() {
     (member) => member.paymentStatus === "Balance Pending",
   ).length;
 
-  const generateReportPDF = (members, reportTitle, fileName) => {
+  const generateReportPDF = (members, reportTitle, fileName, expiredCount) => {
     const doc = new jsPDF();
 
     const totalMembers = members.length;
@@ -442,11 +454,11 @@ function FeeManagement() {
       (m) => m.paymentStatus === "Fully Paid",
     ).length;
 
-    const expiredMembers = members.filter((m) => {
-      if (!m.expiryDate) return false;
-      return new Date(m.expiryDate) < new Date();
-    }).length;
-
+    // const expiredMembers = members.filter((m) => {
+    //   if (!m.expiryDate) return false;
+    //   return new Date(m.expiryDate) < new Date();
+    // }).length;
+const expiredMembers = expiredCount;
     doc.setFillColor(15, 23, 42);
     doc.rect(0, 0, 210, 42, "F");
 
@@ -618,7 +630,7 @@ function FeeManagement() {
 
   // EXPORT TRIGGERS
   const exportFullPDF = () => {
-    generateReportPDF(transactions, "Full Report", "Full-Report.pdf");
+    generateReportPDF(transactions, "Full Report", "Full-Report.pdf",totalExpiredMembers);
   };
 
 const export30DaysPDF = () => {
@@ -636,12 +648,12 @@ const export30DaysPDF = () => {
         paymentHistory: payments,
       };
     })
-    .filter((member) => member.paymentHistory.length > 0);
 
   generateReportPDF(
     filtered,
     "Last 30 Days Report",
-    "30-Days-Report.pdf"
+    "30-Days-Report.pdf",
+    totalExpiredMembers
   );
 };
 
@@ -660,12 +672,12 @@ const export60DaysPDF = () => {
         paymentHistory: payments,
       };
     })
-    .filter((member) => member.paymentHistory.length > 0);
 
   generateReportPDF(
     filtered,
     "Last 60 Days Report",
-    "60-Days-Report.pdf"
+    "60-Days-Report.pdf",
+    totalExpiredMembers
   );
 };
 
