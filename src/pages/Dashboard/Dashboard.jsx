@@ -90,9 +90,10 @@ function Dashboard() {
   /* ── KPI Counts ── */
   const totalMembers = activeBranchMembers.length;
 
-  const activeMembers = activeBranchMembers.filter(
-    (m) => m.status === "Active",
-  ).length;
+const activeMembers = activeBranchMembers.filter((m) => {
+  const daysLeft = getDaysLeft(m.expiryDate);
+  return m.status === "Active" && daysLeft >= 0;
+}).length;
 
   const expiringMembers = activeBranchMembers.filter((m) => {
     const d = getDaysLeft(m.expiryDate);
