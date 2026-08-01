@@ -342,7 +342,7 @@ const getExpiringMembersReport = async (req, res) => {
           (expiryDate - today) / 86400000
         );
 
-        return diffDays >= 0 && diffDays <= 7;
+       return diffDays < 0;
       })
       .sort(
         (a, b) =>

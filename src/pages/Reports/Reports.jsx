@@ -98,10 +98,11 @@ const REPORT_CARDS = [
   {
     id: "DOC_04",
     name: "Renewals Due",
-    desc: "Members whose membership expires in the next 7 days.",
+    desc: "Members whose membership has already expired.",
     icon: <FiRefreshCw />,
     api: "/api/v1/reports/expiring-members",
     type: "expiring-members",
+     extraParams: { includeExpired: "true" },
   },
 ];
 
@@ -440,57 +441,52 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
 
   // ── EXPIRING MEMBERS ───────────────────────────────────────────────────────
   if (reportType === "expiring-members") {
-    const totalExpiring = rows.length;
+    const totalExpired = rows.length;
 
-    // expiring today
-    const expiringToday = rows.filter((m) => {
-      if (!m.expiryDate) return false;
-      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
-      return diff === 0;
-    }).length;
+ // How long ago expired
+  const expiredToday = rows.filter((m) => {
+    const diff = Math.ceil((new Date(m.expiryDate) - today) / 86400000);
+    return diff === 0; // today exactly
+  }).length;
 
-    // expiring in 1-3 days
-    const expiring3Days = rows.filter((m) => {
-      if (!m.expiryDate) return false;
-      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
-      return diff >= 1 && diff <= 3;
-    }).length;
+  const expiredThisWeek = rows.filter((m) => {
+    const diff = Math.ceil((new Date(m.expiryDate) - today) / 86400000);
+    return diff >= -7 && diff < 0;
+  }).length;
 
-    // expiring in 4-7 days
-    const expiring7Days = rows.filter((m) => {
-      if (!m.expiryDate) return false;
-      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
-      return diff >= 4 && diff <= 7;
-    }).length;
+  const expiredOlder = rows.filter((m) => {
+    const diff = Math.ceil((new Date(m.expiryDate) - today) / 86400000);
+    return diff < -7;
+  }).length;
 
     return [
       {
-        label: "Expiring This Week",
-        value: `${totalExpiring}`,
+        label: "Total Expired",
+        value: `${totalExpired}`,
         bgColor: [230, 241, 251],
         border: [133, 183, 235],
         label_c: [24, 95, 165],
         value_c: [12, 68, 124],
       },
       {
-        label: "Expiring Today",
-        value: `${expiringToday}`,
+         label: "Expired Today", 
+       value: `${expiredToday}`,
         bgColor: [252, 235, 235],
         border: [240, 149, 149],
         label_c: [163, 45, 45],
         value_c: [121, 31, 31],
       },
       {
-        label: "Next 1–3 Days",
-        value: `${expiring3Days}`,
+        label: "Expired This Week",
+        value: `${expiredThisWeek}`,
         bgColor: [250, 238, 218],
         border: [239, 159, 39],
         label_c: [133, 79, 11],
         value_c: [99, 56, 6],
       },
       {
-        label: "Next 4–7 Days",
-        value: `${expiring7Days}`,
+        label: "Expired Over a Week",
+       value: `${expiredOlder}`,
         bgColor: [234, 243, 222],
         border: [151, 196, 89],
         label_c: [59, 109, 17],
@@ -942,12 +938,12 @@ function Reports() {
         doc.setFontSize(50);
         doc.text("MUGIL & SP FITNESS", 50, 230, { angle: 45 });
 
-        // Header
+        // Header]
         doc.setFillColor(15, 23, 42);
         doc.rect(0, 0, pageW, 22, "F");
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
+        doc.setFont("helvetica", "bo  ld");
         doc.text(`MUGIL & SP FITNESS  —  ${card.name.toUpperCase()}`, 14, 14);
         doc.setFillColor(99, 102, 241);
         doc.rect(0, 22, pageW, 1.5, "F");
