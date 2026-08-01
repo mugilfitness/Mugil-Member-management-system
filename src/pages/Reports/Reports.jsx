@@ -101,7 +101,7 @@ const REPORT_CARDS = [
    desc: "Members whose membership has already expired.",
     icon: <FiRefreshCw />,
    api: "/api/v1/reports/expired-members",
-    type: "expiring-members",
+    type: "expired-members",
   },
 ];
 
@@ -498,6 +498,76 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
       },
     ];
   }
+
+  if (reportType === "expired-members") {
+
+  const totalExpired = rows.length;
+
+  const expiredToday = rows.filter((m) => {
+    if (!m.expiryDate) return false;
+
+    const diff = Math.ceil(
+      (today - new Date(m.expiryDate)) / 86400000
+    );
+
+    return diff === 0;
+  }).length;
+
+  const expiredWeek = rows.filter((m) => {
+    if (!m.expiryDate) return false;
+
+    const diff = Math.ceil(
+      (today - new Date(m.expiryDate)) / 86400000
+    );
+
+    return diff >= 1 && diff <= 7;
+  }).length;
+
+  const expiredOlder = rows.filter((m) => {
+    if (!m.expiryDate) return false;
+
+    const diff = Math.ceil(
+      (today - new Date(m.expiryDate)) / 86400000
+    );
+
+    return diff > 7;
+  }).length;
+
+  return [
+    {
+      label: "Total Expired Members",
+      value: `${totalExpired}`,
+      bgColor: [230,241,251],
+      border: [133,183,235],
+      label_c: [24,95,165],
+      value_c: [12,68,124],
+    },
+    {
+      label: "Expired Today",
+      value: `${expiredToday}`,
+      bgColor: [252,235,235],
+      border: [240,149,149],
+      label_c: [163,45,45],
+      value_c: [121,31,31],
+    },
+    {
+      label: "Expired (1–7 Days)",
+      value: `${expiredWeek}`,
+      bgColor: [250,238,218],
+      border: [239,159,39],
+      label_c: [133,79,11],
+      value_c: [99,56,6],
+    },
+    {
+      label: "Expired (8+ Days)",
+      value: `${expiredOlder}`,
+      bgColor: [234,243,222],
+      border: [151,196,89],
+      label_c: [59,109,17],
+      value_c: [39,80,10],
+    },
+  ];
+}
 
   // ── TODAY'S COLLECTION ─────────────────────────────────────────────────────
   if (reportType === "today-collection") {
