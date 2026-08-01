@@ -100,7 +100,7 @@ const REPORT_CARDS = [
      name: "Expired Members",
    desc: "Members whose membership has already expired.",
     icon: <FiRefreshCw />,
-    api: "/api/v1/reports/expiring-members",
+   api: "/api/v1/reports/expired-members",
     type: "expiring-members",
   },
 ];

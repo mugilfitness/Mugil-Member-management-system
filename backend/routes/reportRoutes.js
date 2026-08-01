@@ -7,11 +7,13 @@ const {
   getDashboardMetrics,
   getChartData,
   getExpiringMembersReport,
+  getExpiredMembersReport,
   getPendingFeesReport,
   getTodayCollectionReport,
   getBranchRevenueReport,
   getActiveBranchesReport,
   getAllMembersReport,
+  
 } = require("../controllers/reportController");
 
 /* ================= DASHBOARD REPORTS ================= */
@@ -29,6 +31,12 @@ router.get(
   "/expiring-members",
   verifyToken,
   getExpiringMembersReport
+);
+
+router.get(
+  "/expired-members",
+  verifyToken,
+  getExpiredMembersReport
 );
 
 

@@ -342,7 +342,7 @@ const getExpiringMembersReport = async (req, res) => {
           (expiryDate - today) / 86400000
         );
 
-       return diffDays < 0;
+       return diffDays >= 0 && diffDays <= 7;
       })
       .sort(
         (a, b) =>
@@ -368,6 +368,62 @@ const getExpiringMembersReport = async (req, res) => {
       "[getExpiringMembersReport]",
       error
     );
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+const getExpiredMembersReport = async (req, res) => {
+  try {
+    const { branch } = req.query;
+
+    const filter = {};
+
+    if (branch && branch !== "ALL_BRANCHES") {
+      filter.branch = branch;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const members = (await Member.find(filter).lean())
+      .filter((member) => {
+        if (!member.expiryDate) return false;
+
+        const expiryDate = new Date(member.expiryDate);
+        expiryDate.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.ceil(
+          (expiryDate - today) / 86400000
+        );
+
+        return diffDays < 0;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.expiryDate) -
+          new Date(b.expiryDate)
+      )
+      .map((member) => ({
+        memberId: member.memberId,
+        fullName: member.fullName,
+        mobile: member.mobile,
+        branch: member.branch,
+        expiryDate: member.expiryDate,
+        status: getMemberStatus(member.expiryDate),
+      }));
+
+    res.status(200).json({
+      success: true,
+      count: members.length,
+      data: members,
+    });
+  } catch (error) {
+    console.error("[getExpiredMembersReport]", error);
 
     res.status(500).json({
       success: false,
@@ -865,4 +921,5 @@ module.exports = {
   getBranchRevenueReport,
   getActiveBranchesReport,
   getAllMembersReport,
+  getExpiredMembersReport,
 };
