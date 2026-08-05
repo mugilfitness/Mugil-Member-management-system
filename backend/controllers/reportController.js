@@ -488,9 +488,9 @@ const getPendingFeesReport = async (req, res) => {
       //     isDateInPeriod(payment.paymentDate, period)
       //   );
       // })
-      .filter((member) => {
-    return getMemberStatus(member.expiryDate) !== "Expired";
-})
+//       .filter((member) => {
+//     return getMemberStatus(member.expiryDate) !== "Expired";
+// })
       .sort(
         (a, b) =>
           Number(b.balanceAmount || 0) -
