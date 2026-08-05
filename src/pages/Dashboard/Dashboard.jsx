@@ -355,7 +355,7 @@ const pendingCount = allPendingMembers.length;
                 </div>
                 <div>
                   <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider">
-                    Expire Members
+                    Expiring Soon 
                   </p>
                   <h3 className="text-2xl font-bold text-slate-900 font-mono mt-0.5">
                     {expiringMembers}

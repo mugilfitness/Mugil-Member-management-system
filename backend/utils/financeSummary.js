@@ -19,11 +19,11 @@ const calculateFinance = (members, period = "overall") => {
         }
 
 
-        if (status !== "Expired") {
+       
             outstanding += Number(member.balanceAmount || 0);
 
 
-        }
+        
 
 
         if (Number(member.balanceAmount || 0) > highestDue) {
