@@ -53,7 +53,7 @@ function FeeManagement() {
 
   const [modeFilter, setModeFilter] = useState("ALL");
 
-  const [dateFilter, setDateFilter] = useState("THIS_MONTH");
+  const [dateFilter, setDateFilter] = useState("OVERALL");
   const { currentBranch, searchQuery } = useOutletContext();
   const [transactions, setTransactions] = useState([]);
   useEffect(() => {
@@ -177,6 +177,10 @@ function FeeManagement() {
     const now = new Date();
 
     let matchesDate = true;
+
+    if (dateFilter === "OVERALL") {
+    matchesDate = true;
+}
 
     if (dateFilter === "TODAY") {
       matchesDate = txDate.toDateString() === now.toDateString();
@@ -1145,6 +1149,7 @@ hover:bg-violet-50
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="appearance-none bg-white border border-slate-200/80 rounded-[14px] pl-4 pr-9 py-2.5 text-xs font-bold text-slate-600 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 cursor-pointer shadow-sm"
               >
+                <option value="OVERALL">Overall</option>
                 <option value="TODAY">Today</option>
                 <option value="THIS_WEEK">This Week</option>
                 <option value="THIS_MONTH">This Month</option>
@@ -1161,7 +1166,7 @@ hover:bg-violet-50
                 setBranchFilter("ALL");
                 setStatusFilter("ALL");
                 setModeFilter("ALL");
-                setDateFilter("THIS_MONTH");
+               setDateFilter("OVERALL");
                 setCurrentPage(1);
               }}
               className="px-4 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold text-xs"
