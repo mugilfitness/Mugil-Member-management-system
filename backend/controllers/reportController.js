@@ -599,14 +599,10 @@ const getTodayCollectionReport = async (req, res) => {
 
 
 
-    const finance =
-      calculateFinance(
-        members,
-        period
-      );
-
-    const totalCollection =
-      finance.collection;
+ const totalCollection = collections.reduce(
+  (sum, item) => sum + Number(item.amount || 0),
+  0
+);
     res.status(200).json({
       success: true,
       count: collections.length,
