@@ -1,59 +1,83 @@
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+const getISTNow = () => {
+    return new Date(Date.now() + IST_OFFSET_MS);
+};
+
+const getISTDateParts = (date) => {
+    const istDate = new Date(date.getTime() + IST_OFFSET_MS);
+
+    return {
+        year: istDate.getUTCFullYear(),
+        month: istDate.getUTCMonth(),
+        date: istDate.getUTCDate(),
+    };
+};
+
+const getISTDayStart = (date) => {
+    const { year, month, date: day } = getISTDateParts(date);
+
+    return new Date(
+        Date.UTC(year, month, day, 0, 0, 0, 0) - IST_OFFSET_MS
+    );
+};
+
+const getISTDayEnd = (date) => {
+    const { year, month, date: day } = getISTDateParts(date);
+
+    return new Date(
+        Date.UTC(year, month, day, 23, 59, 59, 999) - IST_OFFSET_MS
+    );
+};
+
 const isDateInPeriod = (date, period = "overall") => {
-  if (!date) return false;
+    if (!date) return false;
 
-  const value = new Date(date);
-  const now = new Date();
-  if (isNaN(value.getTime()))
-    return false;
+    const value = new Date(date);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    if (isNaN(value.getTime())) {
+        return false;
+    }
 
-  const todayEnd = new Date(today);
-  todayEnd.setHours(23, 59, 59, 999);
+    const now = new Date();
 
-  const monthStart = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    1
-  );
+    const todayStart = getISTDayStart(now);
+    const todayEnd = getISTDayEnd(now);
 
-  const threeMonthStart = new Date(
-    now.getFullYear(),
-    now.getMonth() - 2,
-    1
-  );
+    const { year, month } = getISTDateParts(now);
 
-  switch (period) {
+    // First day of current month in IST
+    const monthStart = new Date(
+        Date.UTC(year, month, 1, 0, 0, 0, 0) - IST_OFFSET_MS
+    );
 
-    case "today":
-      return value >= today && value <= todayEnd;
+    // Last day of current month in IST
+    const monthEnd = new Date(
+        Date.UTC(year, month + 1, 0, 23, 59, 59, 999) - IST_OFFSET_MS
+    );
 
-    case "thisMonth":
-      const monthEnd = new Date(
-        now.getFullYear(),
-        now.getMonth() + 1,
-        0,
-        23,
-        59,
-        59,
-        999
-      );
+    // First day of 3-month period in IST
+    const threeMonthStart = new Date(
+        Date.UTC(year, month - 2, 1, 0, 0, 0, 0) - IST_OFFSET_MS
+    );
 
-      return value >= monthStart &&
-        value <= monthEnd;
+    switch (period) {
 
-    case "last3Months":
-      return value >= threeMonthStart &&
-        value <= now;
+        case "today":
+            return value >= todayStart && value <= todayEnd;
 
-    case "overall":
-    default:
-      return true;
+        case "thisMonth":
+            return value >= monthStart && value <= monthEnd;
 
-  }
+        case "last3Months":
+            return value >= threeMonthStart && value <= now;
+
+        case "overall":
+        default:
+            return true;
+    }
 };
 
 module.exports = {
-  isDateInPeriod
+    isDateInPeriod
 };
