@@ -789,13 +789,25 @@ const export30DaysPDF = () => {
         paymentHistory: payments,
       };
     })
-    
+    .filter((member) => member.paymentHistory.length > 0);
+
+  const expiredCount = filtered.filter((member) => {
+    if (!member.expiryDate) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expiry = new Date(member.expiryDate);
+    expiry.setHours(0, 0, 0, 0);
+
+    return expiry < today;
+  }).length;
 
   generateReportPDF(
     filtered,
     "Last 30 Days Report",
     "30-Days-Report.pdf",
-    totalExpiredMembers
+    expiredCount
   );
 };
 
@@ -814,12 +826,25 @@ const export60DaysPDF = () => {
         paymentHistory: payments,
       };
     })
+    .filter((member) => member.paymentHistory.length > 0);
+
+  const expiredCount = filtered.filter((member) => {
+    if (!member.expiryDate) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expiry = new Date(member.expiryDate);
+    expiry.setHours(0, 0, 0, 0);
+
+    return expiry < today;
+  }).length;
 
   generateReportPDF(
     filtered,
     "Last 60 Days Report",
     "60-Days-Report.pdf",
-    totalExpiredMembers
+    expiredCount
   );
 };
 
@@ -885,6 +910,10 @@ const export60DaysPDF = () => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+  setCurrentPage(1);
+}, [searchQuery, currentBranch]);
 
   const itemsPerPage = 10;
 

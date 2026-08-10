@@ -525,7 +525,7 @@ const getPendingFeesReport = async (req, res) => {
 
 const getTodayCollectionReport = async (req, res) => {
   try {
-    const { branch, period = "overall" } = req.query;
+ const { branch, period = "overall" } = req.query;
 
     const filter = {};
 
