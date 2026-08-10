@@ -925,6 +925,35 @@ function Reports() {
     fetchChartData();
   }, [fetchDashboardMetrics, fetchChartData]);
 
+  // ── Refresh automatically at midnight ─────────────────────────────
+// ── Refresh automatically every midnight ─────────────────────────
+useEffect(() => {
+  let timer;
+
+  const scheduleMidnightRefresh = () => {
+    const now = new Date();
+
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0);
+
+    const timeUntilMidnight =
+      nextMidnight.getTime() - now.getTime();
+
+    timer = setTimeout(() => {
+      fetchDashboardMetrics();
+      fetchChartData();
+
+      scheduleMidnightRefresh();
+    }, timeUntilMidnight);
+  };
+
+  scheduleMidnightRefresh();
+
+  return () => {
+    clearTimeout(timer);
+  };
+}, [fetchDashboardMetrics, fetchChartData]);
+
   // ── Open modal ────────────────────────────────────────────────────────────────
   const openReportModal = useCallback(
     async (title, endpoint, type = "") => {
@@ -1017,7 +1046,7 @@ function Reports() {
         doc.rect(0, 0, pageW, 22, "F");
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(12);
-        doc.setFont("helvetica", "bo  ld");
+        doc.setFont("helvetica", "bold");
         doc.text(`MUGIL & SP FITNESS  —  ${card.name.toUpperCase()}`, 14, 14);
         doc.setFillColor(99, 102, 241);
         doc.rect(0, 22, pageW, 1.5, "F");
