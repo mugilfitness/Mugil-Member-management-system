@@ -104,114 +104,251 @@ function FeeManagement() {
     note: "",
   });
 
-  const paymentData = transactions.map((member) => {
-    const latestPayment = member.paymentHistory?.at(-1);
-
-    const latestPaymentDate = latestPayment?.paymentDate;
-
-    return {
-      ...member,
-
-      branch: member.branch,
-
-      name: member.fullName || "Unknown Member",
-
-      id: member.memberId || "-",
-
-      phone: member.mobile || "-",
-
-      plan: member.planType || "-",
-
-      duration: member.duration || "-",
-
-      branchName:
-        member.branch === "MUGIL_FITNESS" ? "Mugil Fitness" : "SP Fitness",
-
-      mode: latestPayment?.paymentMethod || member.paymentMethod || "Unknown",
-
-      date: latestPaymentDate
-        ? new Date(latestPaymentDate).toLocaleDateString("en-IN")
-        : "-",
-
-      time: latestPaymentDate
-        ? new Date(latestPaymentDate).toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        : "-",
-
-      status: member.paymentStatus,
-
-      latestPaymentAmount: latestPayment?.amount || 0,
-
-      latestReceiptNo: latestPayment?.receiptNo || "-",
-    };
-  });
-
   const now = new Date();
+const paymentData = transactions.map((member) => {
+  const payments = member.paymentHistory || [];
 
-  const filteredTx = paymentData.filter((t) => {
-    const matchesBranch = branchFilter === "ALL" || t.branch === branchFilter;
+  // Latest payment — used when no payment filter is active
+  const latestPayment = payments.length
+    ? [...payments].sort(
+        (a, b) =>
+          new Date(b.paymentDate) - new Date(a.paymentDate)
+      )[0]
+    : null;
 
-    const matchesCurrentBranch =
-      currentBranch === "ALL_BRANCHES" ? true : t.branch === currentBranch;
+  const isPaymentFilterActive =
+    dateFilter !== "OVERALL" || modeFilter !== "ALL";
 
-    const matchesStatus = statusFilter === "ALL" || t.status === statusFilter;
+  let matchingPayment = latestPayment;
 
-    const matchesMode = modeFilter === "ALL" || t.mode === modeFilter;
+  // If Date / Payment Mode filter is active,
+  // find the latest payment that actually matches the filters.
+  if (isPaymentFilterActive) {
+    const matchingPayments = payments.filter((payment) => {
+      const paymentDate = new Date(payment.paymentDate);
 
-    const search = (searchQuery || "").toLowerCase();
+      if (Number.isNaN(paymentDate.getTime())) {
+        return false;
+      }
 
-    const matchesSearch =
-      t.name?.toLowerCase().includes(search) ||
-      t.id?.toLowerCase().includes(search) ||
-      t.phone?.toLowerCase().includes(search);
+      // -------------------------
+      // Payment Mode
+      // -------------------------
+      const method = (
+        payment.paymentMethod ||
+        payment.paymentMode ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
 
-    const originalMember = transactions.find((m) => m._id === t._id);
+      const selectedMode = modeFilter.trim().toLowerCase();
 
-    const txDate = new Date(
-      originalMember?.paymentHistory?.at(-1)?.paymentDate ||
-        originalMember?.createdAt,
-    );
+      const modeMatches =
+        modeFilter === "ALL" ||
+        method === selectedMode;
 
-    const now = new Date();
+      // -------------------------
+      // Date
+      // -------------------------
+      let dateMatches = true;
 
-    let matchesDate = true;
+      if (dateFilter === "TODAY") {
+        dateMatches =
+          paymentDate.toDateString() === now.toDateString();
+      }
 
-    if (dateFilter === "OVERALL") {
-    matchesDate = true;
-}
+      if (dateFilter === "THIS_WEEK") {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+
+        dateMatches = paymentDate >= weekAgo;
+      }
+
+      if (dateFilter === "THIS_MONTH") {
+        dateMatches =
+          paymentDate.getMonth() === now.getMonth() &&
+          paymentDate.getFullYear() === now.getFullYear();
+      }
+
+      if (dateFilter === "THIS_YEAR") {
+        dateMatches =
+          paymentDate.getFullYear() === now.getFullYear();
+      }
+
+      return dateMatches && modeMatches;
+    });
+
+    // If multiple payments match, show the latest matching payment
+    matchingPayment = matchingPayments.length
+      ? [...matchingPayments].sort(
+          (a, b) =>
+            new Date(b.paymentDate) - new Date(a.paymentDate)
+        )[0]
+      : null;
+  }
+
+  const paymentDate = matchingPayment?.paymentDate;
+
+  return {
+    ...member,
+
+    branch: member.branch,
+
+    name: member.fullName || "Unknown Member",
+
+    id: member.memberId || "-",
+
+    phone: member.mobile || "-",
+
+    plan: member.planType || "-",
+
+    duration: member.duration || "-",
+
+    branchName:
+      member.branch === "MUGIL_FITNESS"
+        ? "Mugil Fitness"
+        : "SP Fitness",
+
+    // IMPORTANT:
+    // This now represents the payment selected by the filter.
+    mode:
+      matchingPayment?.paymentMethod ||
+      matchingPayment?.paymentMode ||
+      member.paymentMethod ||
+      "Unknown",
+
+    date: paymentDate
+      ? new Date(paymentDate).toLocaleDateString("en-IN")
+      : "-",
+
+    time: paymentDate
+      ? new Date(paymentDate).toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "-",
+
+    status: member.paymentStatus,
+
+    // Matching transaction amount
+    matchingPaymentAmount: Number(
+      matchingPayment?.amount || 0
+    ),
+
+    latestPaymentAmount: Number(
+      latestPayment?.amount || 0
+    ),
+
+    latestReceiptNo:
+      matchingPayment?.receiptNo ||
+      latestPayment?.receiptNo ||
+      "-",
+
+    // Keep the actual matched payment available
+    // for future use if needed.
+    matchingPayment,
+  };
+});
+
+const filteredTx = paymentData.filter((t) => {
+  const matchesBranch =
+    branchFilter === "ALL" ||
+    t.branch === branchFilter;
+
+  const matchesCurrentBranch =
+    currentBranch === "ALL_BRANCHES"
+      ? true
+      : t.branch === currentBranch;
+
+  const matchesStatus =
+    statusFilter === "ALL" ||
+    t.status === statusFilter;
+
+  const isPaymentFilterActive =
+    dateFilter !== "OVERALL" ||
+    modeFilter !== "ALL";
+
+  // If a payment filter is active,
+  // the member must have an actual matching payment.
+  const matchesModeAndDate =
+    !isPaymentFilterActive ||
+    Boolean(t.matchingPayment);
+
+  const search = (searchQuery || "").toLowerCase();
+
+  const matchesSearch =
+    t.name?.toLowerCase().includes(search) ||
+    t.id?.toLowerCase().includes(search) ||
+    t.phone?.toLowerCase().includes(search);
+
+  return (
+    matchesBranch &&
+    matchesCurrentBranch &&
+    matchesStatus &&
+    matchesSearch &&
+    matchesModeAndDate
+  );
+});
+
+const filteredCollection = filteredTx.reduce((sum, member) => {
+  const payments = member.paymentHistory || [];
+
+  const filteredPayments = payments.filter((payment) => {
+    const paymentDate = new Date(payment.paymentDate);
+    const today = new Date();
+
+    // Date filter
+    let dateMatches = true;
 
     if (dateFilter === "TODAY") {
-      matchesDate = txDate.toDateString() === now.toDateString();
+      dateMatches =
+        paymentDate.toDateString() === today.toDateString();
     }
 
     if (dateFilter === "THIS_WEEK") {
       const weekAgo = new Date();
-      weekAgo.setDate(now.getDate() - 7);
+      weekAgo.setDate(today.getDate() - 7);
 
-      matchesDate = txDate >= weekAgo;
+      dateMatches = paymentDate >= weekAgo;
     }
 
     if (dateFilter === "THIS_MONTH") {
-      matchesDate =
-        txDate.getMonth() === now.getMonth() &&
-        txDate.getFullYear() === now.getFullYear();
+      dateMatches =
+        paymentDate.getMonth() === today.getMonth() &&
+        paymentDate.getFullYear() === today.getFullYear();
     }
 
     if (dateFilter === "THIS_YEAR") {
-      matchesDate = txDate.getFullYear() === now.getFullYear();
+      dateMatches =
+        paymentDate.getFullYear() === today.getFullYear();
     }
 
-    return (
-      matchesBranch &&
-      matchesCurrentBranch &&
-      matchesStatus &&
-      matchesMode &&
-      matchesSearch &&
-      matchesDate
-    );
+    // Payment mode filter
+    const method = (
+      payment.paymentMethod ||
+      payment.paymentMode ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+    const modeMatches =
+      modeFilter === "ALL" ||
+      method === modeFilter.trim().toLowerCase();
+
+    return dateMatches && modeMatches;
   });
+
+  return (
+    sum +
+    filteredPayments.reduce(
+      (paymentSum, payment) =>
+        paymentSum + Number(payment.amount || 0),
+      0
+    )
+  );
+}, 0);
 
   const totalCollectionSpark = transactions.slice(-7).map((member) => ({
     v:
@@ -927,10 +1064,13 @@ hover:bg-violet-50
 
           {/* Metric 2 */}
           <div
-            onClick={() => {
-              setStatusFilter("Balance Pending");
-              setCurrentPage(1);
-            }}
+          onClick={() => {
+  setStatusFilter("Balance Pending");
+  setDateFilter("OVERALL");
+  setModeFilter("ALL");
+  setBranchFilter("ALL");
+  setCurrentPage(1);
+}}
             className="  cursor-pointer bg-white border border-slate-200/60 rounded-[15px] p-5 shadow-sm hover:shadow-md hover:border-amber-200 transition-all duration-300 flex flex-col justify-between h-[130px] group relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
@@ -967,10 +1107,13 @@ hover:bg-violet-50
 
           {/* Metric 3 */}
           <div
-            onClick={() => {
-              setDateFilter("TODAY");
-              setCurrentPage(1);
-            }}
+          onClick={() => {
+  setDateFilter("TODAY");
+  setStatusFilter("ALL");
+  setModeFilter("ALL");
+  setBranchFilter("ALL");
+  setCurrentPage(1);
+}}
             className="  cursor-pointer bg-white border border-slate-200/60 rounded-[15px] p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300 flex flex-col justify-between h-[130px] group relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
@@ -1044,7 +1187,7 @@ hover:bg-violet-50
                 </h3>
 
                 <p className="text-sm text-slate-500">
-                  {filteredTx
+                  {/* {filteredTx
                     .reduce(
                       (sum, tx) =>
                         sum +
@@ -1056,7 +1199,8 @@ hover:bg-violet-50
                       0,
                     )
                     .toLocaleString("en-IN")}{" "}
-                  Collected
+                  Collected */}
+                  {filteredCollection.toLocaleString("en-IN")} Collected
                 </p>
               </div>
 
@@ -1072,7 +1216,7 @@ hover:bg-violet-50
                 <div className="px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-100">
                   <span className="text-emerald-700 font-black">
                     ₹
-                    {filteredTx
+                    {/* {filteredTx
                       .reduce(
                         (sum, tx) =>
                           sum +
@@ -1083,7 +1227,9 @@ hover:bg-violet-50
                           ) || 0),
                         0,
                       )
-                      .toLocaleString("en-IN")}
+                      .toLocaleString("en-IN")} */}
+
+                      {filteredCollection.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
@@ -1093,7 +1239,10 @@ hover:bg-violet-50
             <div className="relative">
               <select
                 value={branchFilter}
-                onChange={(e) => setBranchFilter(e.target.value)}
+                onChange={(e) => {
+  setBranchFilter(e.target.value);
+  setCurrentPage(1);
+}}
                 className="appearance-none bg-white border border-slate-200/80 rounded-[14px] pl-4 pr-9 py-2.5 text-xs font-bold text-slate-600"
               >
                 <option value="ALL">All Branches</option>
@@ -1111,7 +1260,10 @@ hover:bg-violet-50
             <div className="relative">
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => {
+  setStatusFilter(e.target.value);
+  setCurrentPage(1);
+}}
                 className="appearance-none bg-white border border-slate-200/80 rounded-[14px] pl-4 pr-9 py-2.5 text-xs font-bold text-slate-600 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 cursor-pointer shadow-sm"
               >
                 <option value="ALL">All Status</option>
@@ -1128,7 +1280,10 @@ hover:bg-violet-50
             <div className="relative hidden sm:block">
               <select
                 value={modeFilter}
-                onChange={(e) => setModeFilter(e.target.value)}
+                onChange={(e) => {
+  setModeFilter(e.target.value);
+  setCurrentPage(1);
+}}
                 className="appearance-none bg-white border border-slate-200/80 rounded-[14px] pl-4 pr-9 py-2.5 text-xs font-bold text-slate-600 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 cursor-pointer shadow-sm"
               >
                 <option value="ALL">All Modes</option>
@@ -1146,7 +1301,10 @@ hover:bg-violet-50
             <div className="relative hidden md:block">
               <select
                 value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
+onChange={(e) => {
+  setDateFilter(e.target.value);
+  setCurrentPage(1);
+}}
                 className="appearance-none bg-white border border-slate-200/80 rounded-[14px] pl-4 pr-9 py-2.5 text-xs font-bold text-slate-600 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 cursor-pointer shadow-sm"
               >
                 <option value="OVERALL">Overall</option>
