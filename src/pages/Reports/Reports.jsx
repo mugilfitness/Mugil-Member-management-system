@@ -866,7 +866,8 @@ const buildPDF = (rows, title, branch, period, reportType = "") => {
 function Reports() {
   const { currentBranch } = useOutletContext();
 
-  const [dateRange, setDateRange] = useState("thisMonth");
+  // const [dateRange, setDateRange] = useState("thisMonth");
+  const [dateRange, setDateRange] = useState("today");
   const [openReport, setOpenReport] = useState(false);
   const [loadingReport, setLoadingReport] = useState(false);
   const [reportTitle, setReportTitle] = useState("");
