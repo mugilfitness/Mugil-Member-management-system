@@ -1345,11 +1345,12 @@ function NewMemberForm({ onBack }) {
             </div>
           </div>
         </div>
-        <div className="xl:col-span-3 mt-8 w-full bg-white border border-slate-100 rounded-[24px] p-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="flex items-center gap-4 flex-1 min-w-0">
+     <div className="xl:col-span-3 mt-8 w-full bg-white border border-slate-200/80 rounded-[28px] p-5 sm:p-6 shadow-[0_12px_40px_-18px_rgba(15,23,42,0.20)] relative overflow-hidden">
+         <div className="absolute left-0 top-6 bottom-6 w-1 bg-[#4d3df7] rounded-r-full" />
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
+            <div className="flex items-center gap-4 flex-1 min-w-0 py-1">
               <div
-                className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 transition-all ${
+                className={`w-14 h-14 rounded-2xl border flex items-center justify-center shrink-0 transition-all shadow-sm ${
                   isFormValid
                     ? "bg-emerald-50 border-emerald-100 text-emerald-600"
                     : "bg-amber-50 border-amber-100 text-amber-600"
@@ -1363,7 +1364,7 @@ function NewMemberForm({ onBack }) {
               </div>
               <div className="min-w-0">
                 <h4
-                  className={`text-sm font-black uppercase tracking-wider leading-tight whitespace-nowrap ${
+                  className={`text-sm sm:text-base font-black tracking-tight leading-tight ${
                     isFormValid ? "text-emerald-700" : "text-amber-800"
                   }`}
                 >
@@ -1371,7 +1372,7 @@ function NewMemberForm({ onBack }) {
                     ? "All Parameters Verified"
                     : "Required Parameters Intercepted"}
                 </h4>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 leading-relaxed whitespace-nowrap">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1.5 leading-relaxed">
                   {isFormValid
                     ? "Ready to save this member."
                     : "Please populate all required field vectors."}
@@ -1379,18 +1380,18 @@ function NewMemberForm({ onBack }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full lg:w-auto border-t border-slate-100 pt-5 sm:border-t-0 sm:pt-0">
               <button
                 type="button"
                 onClick={handlePrintClick}
-                className="flex items-center justify-center gap-2 px-6 h-12 border border-slate-300 bg-white text-slate-700 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all hover:bg-slate-50 hover:border-slate-400 cursor-pointer"
+                className="flex items-center justify-center gap-2 px-6 h-12 sm:min-w-[130px] border border-slate-200 bg-white text-slate-700 rounded-xl text-xs font-bold tracking-wide transition-all hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm cursor-pointer"
               >
                 <FiPrinter size={14} /> Print
               </button>
 
               <button
                 type="submit"
-                className={`flex items-center justify-center gap-2 px-8 h-12 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${
+                className={`flex items-center justify-center gap-2 px-7 h-12 sm:min-w-[175px] rounded-xl text-xs font-bold tracking-wide transition-all shadow-sm cursor-pointer ${
                   isFormValid
                     ? "bg-[#4d3df7] text-white shadow-md shadow-indigo-500/30 hover:bg-[#3f30e0]"
                     : "bg-slate-100 text-slate-400 hover:bg-slate-200"
