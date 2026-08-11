@@ -272,7 +272,10 @@ function Members() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6 select-none">
         {/* Card 1: Total Members */}
         <div
-          onClick={() => setMemberView("ALL")}
+          onClick={() => {
+  setStatusFilter("All");
+  setMemberView("ALL");
+}}
           className="group cursor-pointer bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex items-center justify-between h-[110px] transition-all duration-300 hover:border-violet-400 hover:shadow-md hover:shadow-violet-500/5 active:scale-[0.98]"
         >
           <div className="space-y-1">
@@ -299,7 +302,10 @@ function Members() {
 
         {/* Card 2: Active Members */}
         <div
-          onClick={() => setMemberView("ACTIVE")}
+          onClick={() => {
+  setStatusFilter("All");
+  setMemberView("ACTIVE");
+}}
           className="group cursor-pointer bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex items-center justify-between h-[110px] transition-all duration-300 hover:border-emerald-400 hover:shadow-md hover:shadow-emerald-500/5 active:scale-[0.98]"
         >
           <div className="space-y-1">
@@ -327,7 +333,10 @@ function Members() {
 
         {/* Card 3: Pending Fees */}
         <div
-          onClick={() => setMemberView("PENDING")}
+          onClick={() => {
+  setStatusFilter("All");
+  setMemberView("PENDING");
+}}
           className="group cursor-pointer bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex items-center justify-between h-[110px] transition-all duration-300 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/5 active:scale-[0.98]"
         >
           <div className="space-y-1">
@@ -355,7 +364,10 @@ function Members() {
 
         {/* Card 4: Expiring Soon */}
         <div
-          onClick={() => setMemberView("EXPIRING")}
+          onClick={() => {
+  setStatusFilter("All");
+  setMemberView("EXPIRING");
+}}
           className="group cursor-pointer bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex items-center justify-between h-[110px] transition-all duration-300 hover:border-red-400 hover:shadow-md hover:shadow-red-500/5 active:scale-[0.98]"
         >
           <div className="space-y-1">
@@ -488,21 +500,32 @@ function Members() {
                     </td>
 
                     {/* Status */}
-                    <td className="py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-[11px] font-black uppercase ${
-                          m.status === "Active"
-                            ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                            : m.status === "Expired"
-                              ? "bg-red-50 text-red-600 border border-red-100"
-                              : m.status === "Inactive"
-                                ? "bg-slate-100 text-slate-600 border border-slate-200"
-                                : "bg-amber-50 text-amber-600 border border-amber-100"
-                        }`}
-                      >
-                        {m.status}
-                      </span>
-                    </td>
+                  <td className="py-4">
+  {(() => {
+    const daysLeft = calculateDaysLeft(m.expiryDate);
+
+    const displayStatus =
+      daysLeft < -180
+        ? "Inactive"
+        : daysLeft < 0
+          ? "Expired"
+          : "Active";
+
+    return (
+      <span
+        className={`px-3 py-1 rounded-full text-[11px] font-black uppercase ${
+          displayStatus === "Active"
+            ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+            : displayStatus === "Expired"
+              ? "bg-red-50 text-red-600 border border-red-100"
+              : "bg-slate-100 text-slate-600 border border-slate-200"
+        }`}
+      >
+        {displayStatus}
+      </span>
+    );
+  })()}
+</td>
 
                     {/* Join Date */}
                     <td className="py-4 font-mono text-slate-500">
