@@ -63,12 +63,14 @@ function EditMember() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await confirmAlert(
-      "Save Changes?",
-      "Do you want to update this member?",
-    );
+const confirmed = await confirmAlert({
+  title: "Save Changes?",
+  text: "Do you want to update this member?",
+  confirmButtonText: "Yes",
+  cancelButtonText: "Cancel",
+});
 
-    if (!result.isConfirmed) return;
+if (!confirmed) return;
 
     try {
       setSaving(true);
@@ -213,14 +215,16 @@ function EditMember() {
             <button
   type="button"
 onClick={async () => {
-  const result = await confirmAlert(
-    "Discard Changes?",
-    "Unsaved changes will be lost."
-  );
+const confirmed = await confirmAlert({
+  title: "Discard Changes?",
+  text: "Unsaved changes will be lost.",
+  confirmButtonText: "Yes",
+  cancelButtonText: "Cancel",
+});
 
-  if (!result?.isConfirmed) return;
+if (!confirmed) return;
 
-  navigate(-1);
+navigate(-1);
 }}
   className="
     px-5 py-2.5
