@@ -949,7 +949,7 @@ function NewMemberForm({ onBack }) {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="text-slate-500 text-[10px] uppercase font-black tracking-wider block mb-1">
                   Amount Paid
                 </label>
@@ -964,7 +964,33 @@ function NewMemberForm({ onBack }) {
                       : "border-slate-200 focus:border-[#4d3df7]"
                   }`}
                 />
-              </div>
+              </div> */}
+
+              <div>
+  <label className="text-slate-500 text-[10px] uppercase font-black tracking-wider block mb-1.5">
+    Amount Paid
+  </label>
+
+  <div
+    className={`relative w-full rounded-xl border-2 bg-white transition-all ${
+      errors.amountPaid
+        ? "border-red-400 ring-1 ring-red-100"
+        : "border-slate-200 focus-within:border-[#4d3df7] focus-within:ring-2 focus-within:ring-[#4d3df7]/10"
+    }`}
+  >
+    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-emerald-600">
+      ₹
+    </span>
+
+    <input
+      type="number"
+      name="amountPaid"
+      value={formData.amountPaid}
+      onChange={handleInputChange}
+      className="w-full h-14 bg-transparent pl-10 pr-4 text-lg font-black font-mono text-slate-800 outline-none"
+    />
+  </div>
+</div>
 
               <div>
                 <label className="text-slate-500 text-[10px] uppercase font-black tracking-wider block mb-1">
