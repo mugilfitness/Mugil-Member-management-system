@@ -347,15 +347,15 @@ const Footer = () => {
       );
     }
   }}
-  className="flex items-center justify-center gap-1 text-[9px] tracking-[0.2em] uppercase group shrink-0"
+  className="flex items-center justify-center text-[9px] tracking-[0.2em] uppercase group shrink-0"
 >
   <span className="text-zinc-600">
     Developed by
   </span>
 
-  <span className="font-black text-zinc-300 tracking-[0.18em] transition-colors duration-500 group-hover:text-[#ffc114]">
-    Naren
-  </span>
+<span className="font-black text-zinc-300 tracking-[0.18em] cursor-pointer transition-all duration-300 group-hover:text-[#ffc114] group-hover:underline group-hover:underline-offset-4">
+  HN Developers
+</span>
 
   <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
   ♥
