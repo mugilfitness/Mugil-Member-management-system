@@ -315,39 +315,38 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="relative border-t border-white/[0.04] pt-5 mt-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[9px] tracking-[0.3em] font-medium text-zinc-600 bg-gradient-to-r from-transparent via-white/[0.01] to-transparent py-4 px-4 rounded-lg backdrop-blur-sm group/sub">
-       
-          <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#ffc114]/20 to-transparent transition-all duration-1000 group-hover/sub:via-[#ffc114]/40" />
+ <div className="relative border-t border-white/[0.04] pt-5 mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-[9px] tracking-[0.3em] font-medium text-zinc-600 bg-gradient-to-r from-transparent via-white/[0.01] to-transparent py-4 px-4 rounded-lg backdrop-blur-sm group/sub">
 
-          <p className="uppercase leading-relaxed text-center sm:text-left">
-            &copy; {new Date().getFullYear()}{" "}
-            <span className="text-zinc-300 font-black tracking-[0.25em] transition-colors duration-500 group-hover/sub:text-[#ffc114]">
-              MUGIL FITNESS
-            </span>{" "}
-            &{" "}
-            <span className="text-zinc-300 font-black tracking-[0.25em] transition-colors duration-500 group-hover/sub:text-[#ffc114]">
-              SP FITNESS
-            </span>
-            . ALL RIGHTS RESERVED.
-          </p>
+  <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#ffc114]/20 to-transparent transition-all duration-1000 group-hover/sub:via-[#ffc114]/40" />
 
-          <a
-  href="mailto:ktmnaren@gmail.com"
-  className="flex items-center gap-2 text-[9px] tracking-[0.2em] uppercase group"
->
-  <span className="text-zinc-600">
-    Developed by
-  </span>
+  {/* Copyright */}
+  <p className="uppercase leading-relaxed text-center sm:text-left">
+    &copy; {new Date().getFullYear()}{" "}
+    <span className="text-zinc-300 font-black tracking-[0.25em] transition-colors duration-500 group-hover/sub:text-[#ffc114]">
+      MUGIL FITNESS
+    </span>
+    . ALL RIGHTS RESERVED.
+  </p>
 
-  <span className="font-black text-zinc-300 tracking-[0.18em] transition-colors duration-500 group-hover:text-[#ffc114]">
-    Naren
-  </span>
+  {/* Developer */}
+  <a
+    href="mailto:ktmnaren@gmail.com"
+    className="flex items-center justify-center gap-2 text-[9px] tracking-[0.2em] uppercase group shrink-0"
+  >
+    <span className="text-zinc-600">
+      Developed by
+    </span>
 
-  <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
-    ♥
-  </span>
-</a>
-        </div>
+    <span className="font-black text-zinc-300 tracking-[0.18em] transition-colors duration-500 group-hover:text-[#ffc114]">
+      Naren
+    </span>
+
+    <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
+      ♥
+    </span>
+  </a>
+
+</div>
       </div>
     </footer>
   );
