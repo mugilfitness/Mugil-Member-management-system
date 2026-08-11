@@ -74,14 +74,15 @@ function EditMember() {
       setSaving(true);
 
       await api.put(`/members/${id}`, formData);
-      await fetchMember();
+      // await fetchMember();
 
       await successAlert(
         "Updated Successfully",
         "Member details have been updated successfully.",
       );
+      navigate(-1);
 
-      setIsEditMode(false);
+      // setIsEditMode(false);
     } catch (error) {
       console.log(error);
 
@@ -211,17 +212,16 @@ function EditMember() {
               <>
             <button
   type="button"
-  onClick={async () => {
-    const result = await confirmAlert(
-      "Discard Changes?",
-      "Unsaved changes will be lost."
-    );
+onClick={async () => {
+  const result = await confirmAlert(
+    "Discard Changes?",
+    "Unsaved changes will be lost."
+  );
 
-    if (result?.isConfirmed) {
-      await fetchMember();
-      setIsEditMode(false);
-    }
-  }}
+  if (!result?.isConfirmed) return;
+
+  navigate(-1);
+}}
   className="
     px-5 py-2.5
     rounded-lg
