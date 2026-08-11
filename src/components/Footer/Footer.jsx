@@ -315,7 +315,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
- <div className="relative border-t border-white/[0.04] pt-5 mt-5 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-[9px] tracking-[0.3em] font-medium text-zinc-600 bg-gradient-to-r from-transparent via-white/[0.01] to-transparent py-4 px-4 rounded-lg backdrop-blur-sm group/sub">
+ <div className="relative border-t border-white/[0.04] pt-3 mt-3 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-[9px] tracking-[0.3em] font-medium text-zinc-600 bg-gradient-to-r from-transparent via-white/[0.01] to-transparent py-3 px-3 rounded-lg backdrop-blur-sm group/sub">
 
   <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#ffc114]/20 to-transparent transition-all duration-1000 group-hover/sub:via-[#ffc114]/40" />
 
