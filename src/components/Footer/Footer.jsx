@@ -329,24 +329,22 @@ const Footer = () => {
   </p>
 
   {/* Developer */}
- <a
-  href="https://mail.google.com/mail/?view=cm&fs=1&to=ktmnaren@gmail.com&su=Website%20Enquiry&body=Hello%20Naren,"
-  target="_blank"
-  rel="noopener noreferrer"
+<a
+  href="mailto:ktmnaren@gmail.com"
   className="flex items-center justify-center gap-2 text-[9px] tracking-[0.2em] uppercase group shrink-0"
 >
-    <span className="text-zinc-600">
-      Developed by
-    </span>
+  <span className="text-zinc-600">
+    Developed by
+  </span>
 
-    <span className="font-black text-zinc-300 tracking-[0.18em] transition-colors duration-500 group-hover:text-[#ffc114]">
-      Naren
-    </span>
+  <span className="font-black text-zinc-300 tracking-[0.18em] transition-colors duration-500 group-hover:text-[#ffc114]">
+    Naren
+  </span>
 
-    <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
-      ♥
-    </span>
-  </a>
+  <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
+    ♥
+  </span>
+</a>
 
 </div>
       </div>
