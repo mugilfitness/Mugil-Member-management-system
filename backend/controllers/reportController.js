@@ -136,7 +136,7 @@ const expiringMembers = members.filter((member) => {
 
     
 const newMembers = members.filter((member) =>
-  isDateInPeriod(member.createdAt, period)
+ isDateInPeriod(member.joinDate, period)
 ).length;
 
     res.status(200).json({
@@ -842,9 +842,9 @@ const getAllMembersReport = async (req, res) => {
         const members = (await Member.find(filter)
             .sort({ createdAt: -1 })
             .lean())
-            .filter((member) =>
-                isDateInPeriod(member.createdAt, period)
-            )
+          .filter((member) =>
+    isDateInPeriod(member.joinDate, period)
+)
             .map((member) => ({
                 memberId: member.memberId,
                 fullName: member.fullName,
