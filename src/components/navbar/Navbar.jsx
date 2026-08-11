@@ -171,9 +171,9 @@ const Navbar = () => {
                   relative overflow-hidden group
                   bg-[#ffc114] hover:bg-[#e0a800]
                   text-black
-                  text-[11px] font-black tracking-[0.20em]
-                  px-[32px] py-[10px]
-                  rounded-[6px]
+                  text-[10px] font-black tracking-[0.20em]
+                  px-[28px] py-[9px]
+                  rounded-[5px]
                   border border-white/20
                   transition-all duration-300
                   shadow-[0_2px_10px_rgba(0,0,0,0.30)]
