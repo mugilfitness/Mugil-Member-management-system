@@ -49,7 +49,7 @@ function Topbar({
   };
 
   return (
-    <header className="fixed top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 select-none transition-all duration-300">
+    <header className="fixed top-0 left-0 right-0 lg:left-[280px] z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 select-none transition-all duration-300">
       <div className="h-[64px] sm:h-[74px] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 max-w-xl">
           <button
