@@ -500,7 +500,7 @@ function NewMemberForm({ onBack }) {
       >
         <div className="xl:col-span-3 space-y-6">
          
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-slate-100 rounded-[14px] p-6 shadow-sm space-y-4">
             <h3 className="text-xs font-black text-[#4d3df7] uppercase tracking-widest flex items-center gap-2">
               <FiUser size={14} /> 1. Personal Information
             </h3>
@@ -651,7 +651,7 @@ function NewMemberForm({ onBack }) {
 
          
              
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-5">
+          <div className="bg-white border border-slate-100 rounded-[14px] p-6 shadow-sm space-y-5">
             <h3 className="text-xs font-black text-[#4d3df7] uppercase tracking-widest flex items-center gap-2">
               <FiCreditCard size={14} /> 2. Membership Details
             </h3>
@@ -896,7 +896,7 @@ function NewMemberForm({ onBack }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-5">
+          <div className="bg-white border border-slate-100 rounded-[14px] p-6 shadow-sm space-y-5">
             <h3 className="text-xs font-black text-[#4d3df7] uppercase tracking-widest flex items-center gap-2">
               <FiDollarSign size={14} /> 3. Payment Information
             </h3>
@@ -1061,7 +1061,7 @@ function NewMemberForm({ onBack }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-slate-100 rounded-[14px] p-6 shadow-sm space-y-4">
             <h3 className="text-xs font-black text-[#4d3df7] uppercase tracking-widest flex items-center gap-2">
               <FiActivity size={14} /> 4. Fitness Information
               <span className="text-[10px] font-medium text-slate-400 capitalize normal-case">
@@ -1181,7 +1181,7 @@ function NewMemberForm({ onBack }) {
         </div>
 
         <div className="xl:col-span-3 select-none">
-          <div className="bg-white border border-slate-100 rounded-[24px] p-6 shadow-sm">
+          <div className="bg-white border border-slate-100 rounded-[14px] p-6 shadow-sm">
             <div className="border-b border-slate-100 pb-4 mb-6">
               <h4 className="text-lg font-black text-slate-900">
                 Payment Summary
@@ -1345,7 +1345,7 @@ function NewMemberForm({ onBack }) {
             </div>
           </div>
         </div>
-     <div className="xl:col-span-3 mt-8 w-full bg-white border border-slate-200/80 rounded-[28px] p-5 sm:p-6 shadow-[0_12px_40px_-18px_rgba(15,23,42,0.20)] relative overflow-hidden">
+     <div className="xl:col-span-3 mt-3 w-full bg-white border border-slate-200/80 rounded-[14px] p-5 sm:p-6 shadow-[0_12px_40px_-18px_rgba(15,23,42,0.20)] relative overflow-hidden">
          <div className="absolute left-0 top-6 bottom-6 w-1 bg-[#4d3df7] rounded-r-full" />
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
             <div className="flex items-center gap-4 flex-1 min-w-0 py-1">

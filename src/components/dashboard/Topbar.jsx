@@ -105,7 +105,7 @@ function Topbar({
               className=" cursor-pointer flex items-center gap-1.5 sm:gap-2.5 bg-slate-50 border border-slate-200/80 px-2 sm:px-3.5 h-[38px] sm:h-[42px] rounded-xl shadow-sm hover:border-slate-300 hover:bg-white active:scale-98 transition-all duration-200 focus:outline-none"
             >
               <div
-                className={`w-2 h-2 rounded-full ring-4 ${
+                className={`w-2 h-2 rounded-[14px] ring-4 ${
                   currentBranch === "ALL_BRANCHES"
                     ? "bg-emerald-500 ring-emerald-100"
                     : currentBranch === "MUGIL_FITNESS"
