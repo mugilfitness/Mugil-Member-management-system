@@ -132,7 +132,7 @@ const Contact = () => {
     {
       icon: <FiMail />,
       title: "Email",
-      lines: ["info@mugilfitness.com", "support@spfitness.com"],
+      lines: ["mugilfitness@gmail.com"],
     },
   ];
 

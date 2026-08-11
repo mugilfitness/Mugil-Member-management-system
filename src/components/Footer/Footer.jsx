@@ -330,8 +330,24 @@ const Footer = () => {
 
   {/* Developer */}
 <a
-  href="mailto:ktmnaren@gmail.com"
-  className="flex items-center justify-center gap-2 text-[9px] tracking-[0.2em] uppercase group shrink-0"
+  href="#"
+  onClick={(e) => {
+    e.preventDefault();
+
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      window.location.href = "mailto:ktmnaren@gmail.com";
+    } else {
+      window.open(
+        "https://mail.google.com/mail/?view=cm&fs=1&to=ktmnaren@gmail.com",
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+  }}
+  className="flex items-center justify-center gap-1 text-[9px] tracking-[0.2em] uppercase group shrink-0"
 >
   <span className="text-zinc-600">
     Developed by
@@ -342,7 +358,7 @@ const Footer = () => {
   </span>
 
   <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
-    ♥
+  ♥
   </span>
 </a>
 
