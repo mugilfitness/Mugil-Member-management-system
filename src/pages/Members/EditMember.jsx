@@ -209,39 +209,39 @@ function EditMember() {
               </>
             ) : (
               <>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const result = await confirmAlert(
-                      "Discard Changes?",
-                      "Unsaved changes will be lost.",
-                    );
+            <button
+  type="button"
+  onClick={async () => {
+    const result = await confirmAlert(
+      "Discard Changes?",
+      "Unsaved changes will be lost."
+    );
 
-                    if (!result.isConfirmed) return;
-
-                    await fetchMember();
-                    setIsEditMode(false);
-                  }}
-                  className="
-              px-5 py-2.5
-              rounded-lg
-              border border-slate-200
-              bg-white
-              text-slate-600
-              text-xs
-              font-black
-              uppercase
-              tracking-wider
-              hover:bg-rose-50
-              hover:text-rose-600
-              hover:border-rose-200
-              transition-all
-              flex items-center gap-2
-            "
-                >
-                  <FiX size={14} />
-                  Cancel
-                </button>
+    if (result?.isConfirmed) {
+      await fetchMember();
+      setIsEditMode(false);
+    }
+  }}
+  className="
+    px-5 py-2.5
+    rounded-lg
+    border border-slate-200
+    bg-white
+    text-slate-600
+    text-xs
+    font-black
+    uppercase
+    tracking-wider
+    hover:bg-rose-50
+    hover:text-rose-600
+    hover:border-rose-200
+    transition-all
+    flex items-center gap-2
+  "
+>
+  <FiX size={14} />
+  Cancel
+</button>
 
                 <button
                   type="submit"
