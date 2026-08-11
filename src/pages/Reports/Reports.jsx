@@ -74,7 +74,7 @@ const REPORT_CARDS = [
   {
     id: "DOC_01",
     name: "Pending Members",
-    desc: "View all PPending payments, balances and collection history.",
+    desc: "View all Pending payments, balances and collection history.",
     icon: <FiDollarSign />,
     api: "/api/v1/reports/pending-fees",
     type: "pending-fees",
