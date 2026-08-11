@@ -5,6 +5,29 @@ const { isDateInPeriod } = require("../utils/dateFilter");
 
 const { calculateFinance } = require("../utils/financeSummary");
 
+const getISTDateOnly = (date) => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(date));
+
+  const year = Number(
+    parts.find((part) => part.type === "year").value
+  );
+
+  const month = Number(
+    parts.find((part) => part.type === "month").value
+  );
+
+  const day = Number(
+    parts.find((part) => part.type === "day").value
+  );
+
+  return new Date(Date.UTC(year, month - 1, day));
+};
+
 
 // ─── Shared Helpers ───────────────────────────────────────────────────────────
 
@@ -90,15 +113,16 @@ const getDashboardMetrics = async (req, res) => {
     const pendingPayments =
       finance.outstanding;
 
-    const expiringMembers = members.filter((member) => {
-      if (!member.expiryDate) return false;
+const expiringMembers = members.filter((member) => {
+  if (!member.expiryDate) return false;
 
-      const diffDays = Math.ceil(
-        (new Date(member.expiryDate) - today) / 86400000
-      );
+  const expiryDate = getISTDateOnly(member.expiryDate);
 
-      return diffDays >= 0 && diffDays <= 7;
-    }).length;
+  const diffDays =
+    (expiryDate - getISTDateOnly(new Date())) / 86400000;
+
+  return diffDays >= 0 && diffDays <= 7;
+}).length;
 
     const branchesReporting = await Branch.countDocuments(
       buildBranchFilter(branch)
@@ -111,44 +135,9 @@ const getDashboardMetrics = async (req, res) => {
 
 
     
-    let newMembers = 0;
-
-    members.forEach((member) => {
-      const created = new Date(member.createdAt);
-
-      switch (period) {
-        case "today":
-          if (
-            created >= today &&
-            created <= todayEnd
-          ) {
-            newMembers++;
-          }
-          break;
-
-        case "thisMonth":
-          if (
-            created >= monthStart &&
-            created <= now
-          ) {
-            newMembers++;
-          }
-          break;
-
-        case "last3Months":
-          if (
-            created >= threeMonthStart &&
-            created <= now
-          ) {
-            newMembers++;
-          }
-          break;
-
-        case "overall":
-        default:
-          newMembers++;
-      }
-    });
+const newMembers = members.filter((member) =>
+  isDateInPeriod(member.createdAt, period)
+).length;
 
     res.status(200).json({
       success: true,
@@ -328,22 +317,36 @@ const getExpiringMembersReport = async (req, res) => {
       filter.branch = branch;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // const today = new Date();
+    // today.setHours(0, 0, 0, 0);
 
-    const members = (await Member.find(filter).lean())
-      .filter((member) => {
-        if (!member.expiryDate) return false;
+    // const members = (await Member.find(filter).lean())
+    //   .filter((member) => {
+    //     if (!member.expiryDate) return false;
 
-        const expiryDate = new Date(member.expiryDate);
-        expiryDate.setHours(0, 0, 0, 0);
+    //     const expiryDate = new Date(member.expiryDate);
+    //     expiryDate.setHours(0, 0, 0, 0);
 
-        const diffDays = Math.ceil(
-          (expiryDate - today) / 86400000
-        );
+    //     const diffDays = Math.ceil(
+    //       (expiryDate - today) / 86400000
+    //     );
 
-       return diffDays >= 0 && diffDays <= 7;
-      })
+    //    return diffDays >= 0 && diffDays <= 7;
+    //   })
+
+    const today = getISTDateOnly(new Date());
+
+const members = (await Member.find(filter).lean())
+  .filter((member) => {
+    if (!member.expiryDate) return false;
+
+    const expiryDate = getISTDateOnly(member.expiryDate);
+
+    const diffDays =
+      (expiryDate - today) / 86400000;
+
+    return diffDays >= 0 && diffDays <= 7;
+  })
       .sort(
         (a, b) =>
           new Date(a.expiryDate) -
@@ -387,22 +390,36 @@ const getExpiredMembersReport = async (req, res) => {
       filter.branch = branch;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // const today = new Date();
+    // today.setHours(0, 0, 0, 0);
 
-    const members = (await Member.find(filter).lean())
-      .filter((member) => {
-        if (!member.expiryDate) return false;
+    // const members = (await Member.find(filter).lean())
+    //   .filter((member) => {
+    //     if (!member.expiryDate) return false;
 
-        const expiryDate = new Date(member.expiryDate);
-        expiryDate.setHours(0, 0, 0, 0);
+    //     const expiryDate = new Date(member.expiryDate);
+    //     expiryDate.setHours(0, 0, 0, 0);
 
-        const diffDays = Math.ceil(
-          (expiryDate - today) / 86400000
-        );
+    //     const diffDays = Math.ceil(
+    //       (expiryDate - today) / 86400000
+    //     );
 
-        return diffDays < 0;
-      })
+    //     return diffDays < 0;
+    //   })
+
+    const today = getISTDateOnly(new Date());
+
+const members = (await Member.find(filter).lean())
+  .filter((member) => {
+    if (!member.expiryDate) return false;
+
+    const expiryDate = getISTDateOnly(member.expiryDate);
+
+    const diffDays =
+      (expiryDate - today) / 86400000;
+
+    return diffDays < 0;
+  })
       .sort(
         (a, b) =>
           new Date(a.expiryDate) -
@@ -817,46 +834,43 @@ const getActiveBranchesReport = async (req, res) => {
 // ─── All Members Directory ────────────────────────────────────────────────────
 
 const getAllMembersReport = async (req, res) => {
-  try {
-    const { branch, period = "overall" } = req.query;
+    try {
+        const { branch, period = "overall" } = req.query;
 
-    const filter = buildMemberFilter(branch);
+        const filter = buildMemberFilter(branch);
 
-    const members = (await Member.find(filter)
-      .sort({ createdAt: -1 })
-      .lean())
-      .filter((member) => {
-        if (period === "overall") {
-          return true;
-        }
+        const members = (await Member.find(filter)
+            .sort({ createdAt: -1 })
+            .lean())
+            .filter((member) =>
+                isDateInPeriod(member.createdAt, period)
+            )
+            .map((member) => ({
+                memberId: member.memberId,
+                fullName: member.fullName,
+                mobile: member.mobile,
+                branch: member.branch,
+                status: getMemberStatus(member.expiryDate),
+                amountPaid: Number(member.amountPaid || 0),
+                balanceAmount: Number(member.balanceAmount || 0),
+                paymentMethod: member.paymentMethod,
+                expiryDate: member.expiryDate,
+            }));
 
-        return isDateInPeriod(member.createdAt, period);
-      })
-      .map((member) => ({
-        memberId: member.memberId,
-        fullName: member.fullName,
-        mobile: member.mobile,
-        branch: member.branch,
-        status: getMemberStatus(member.expiryDate),
-        amountPaid: Number(member.amountPaid || 0),
-        balanceAmount: Number(member.balanceAmount || 0),
-        paymentMethod: member.paymentMethod,
-        expiryDate: member.expiryDate,
-      }));
+        res.status(200).json({
+            success: true,
+            count: members.length,
+            data: members,
+        });
 
-    res.status(200).json({
-      success: true,
-      count: members.length,
-      data: members,
-    });
-  } catch (error) {
-    console.error("[getAllMembersReport]", error);
+    } catch (error) {
+        console.error("[getAllMembersReport]", error);
 
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
