@@ -330,6 +330,23 @@ const Footer = () => {
             </span>
             . ALL RIGHTS RESERVED.
           </p>
+
+          <a
+  href="mailto:ktmnaren@gmail.com"
+  className="flex items-center gap-2 text-[9px] tracking-[0.2em] uppercase group"
+>
+  <span className="text-zinc-600">
+    Developed by
+  </span>
+
+  <span className="font-black text-zinc-300 tracking-[0.18em] transition-colors duration-500 group-hover:text-[#ffc114]">
+    Naren
+  </span>
+
+  <span className="text-blue-500 text-sm drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-110">
+    ♥
+  </span>
+</a>
         </div>
       </div>
     </footer>
