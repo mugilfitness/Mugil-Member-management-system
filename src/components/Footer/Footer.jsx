@@ -330,7 +330,9 @@ const Footer = () => {
 
   {/* Developer */}
   <a
-    href="mailto:ktmnaren@gmail.com"
+     href="https://mail.google.com/mail/?view=cm&fs=1&to=ktmnaren@gmail.com"
+  target="_blank"
+  rel="noopener noreferrer"
     className="flex items-center justify-center gap-2 text-[9px] tracking-[0.2em] uppercase group shrink-0"
   >
     <span className="text-zinc-600">
