@@ -73,8 +73,8 @@ const DATE_RANGE_OPTIONS = [
 const REPORT_CARDS = [
   {
     id: "DOC_01",
-    name: "Payment Ledger",
-    desc: "View all payments, balances and collection history.",
+    name: "Pending Members",
+    desc: "View all PPending payments, balances and collection history.",
     icon: <FiDollarSign />,
     api: "/api/v1/reports/pending-fees",
     type: "pending-fees",
