@@ -40,7 +40,7 @@ function DashboardLayout() {
           />
 
           {/* ================= PAGE CONTENT ================= */}
-          <main className="p-4 sm:p-6 lg:p-8 overflow-x-auto">
+          <main className="pt-[80px] p-4 sm:pt-[90px] sm:p-6 lg:pt-[90px] lg:p-8 overflow-x-auto">
             <div className="mx-auto">
               <Outlet
                 context={{
