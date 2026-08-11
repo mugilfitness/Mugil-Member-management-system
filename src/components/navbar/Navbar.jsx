@@ -195,7 +195,7 @@ const Navbar = () => {
                 />
                 <span className="relative z-10 flex items-center gap-[6px]">
                   <FiLock className="text-[11px]" />
-                  LOGIN
+                  Admin Login
                 </span>
               </button>
             </Link>
