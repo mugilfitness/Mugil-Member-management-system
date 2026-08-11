@@ -822,63 +822,15 @@ const getAllMembersReport = async (req, res) => {
 
     const filter = buildMemberFilter(branch);
 
-    const now = new Date();
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const todayEnd = new Date(today);
-    todayEnd.setHours(23, 59, 59, 999);
-
-    const monthStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      1,
-      0,
-      0,
-      0,
-      0
-    );
-
-    const threeMonthStart = new Date(
-      now.getFullYear(),
-      now.getMonth() - 2,
-      1,
-      0,
-      0,
-      0,
-      0
-    );
-
     const members = (await Member.find(filter)
       .sort({ createdAt: -1 })
       .lean())
       .filter((member) => {
-        const createdAt = new Date(member.createdAt);
-
-        switch (period) {
-          case "today":
-            return (
-              createdAt >= today &&
-              createdAt <= todayEnd
-            );
-
-          case "thisMonth":
-            return (
-              createdAt >= monthStart &&
-              createdAt <= now
-            );
-
-          case "last3Months":
-            return (
-              createdAt >= threeMonthStart &&
-              createdAt <= now
-            );
-
-          case "overall":
-          default:
-            return true;
+        if (period === "overall") {
+          return true;
         }
+
+        return isDateInPeriod(member.createdAt, period);
       })
       .map((member) => ({
         memberId: member.memberId,
