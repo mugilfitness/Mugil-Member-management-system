@@ -438,7 +438,16 @@ const collectPayment = async (req, res) => {
 };
 
 const renewMember = async (req, res) => {
+
   try {
+    console.log("RENEWAL SERVER TIME:", new Date().toString());
+console.log(
+  "RENEWAL SERVER TIMEZONE:",
+  Intl.DateTimeFormat().resolvedOptions().timeZone
+);
+console.log("RENEWAL UTC:", new Date().toISOString());
+
+
     const member = await Member.findById(req.params.id);
 
     if (!member) {

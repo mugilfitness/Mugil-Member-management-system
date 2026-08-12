@@ -19,6 +19,15 @@ import {
   FiAlertCircle,
   FiFileText,
 } from "react-icons/fi";
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+const getISTToday = () => {
+  const istNow = new Date(Date.now() + IST_OFFSET_MS);
+
+  return `${istNow.getUTCFullYear()}-${String(
+    istNow.getUTCMonth() + 1
+  ).padStart(2, "0")}-${String(istNow.getUTCDate()).padStart(2, "0")}`;
+};
 
 function NewMemberForm({ onBack }) {
   const [errors, setErrors] = useState({});
@@ -52,7 +61,7 @@ function NewMemberForm({ onBack }) {
     selectedPlanId: "",
 
     duration: "1 Month",
-    joinDate: new Date().toISOString().split("T")[0],
+    joinDate: getISTToday(),
     expiryDate: "",
     totalDays: 30,
     branch: "MUGIL_FITNESS",
@@ -122,7 +131,7 @@ function NewMemberForm({ onBack }) {
       newErrors.address = true;
     }
 
-    const todays = new Date().toISOString().split("T")[0];
+    const todays = getISTToday();
     if (!formData.joinDate || formData.joinDate > todays)
       newErrors.joinDate = true;
 
@@ -192,7 +201,7 @@ function NewMemberForm({ onBack }) {
       newErrors.address = true;
     }
 
-    const todays = new Date().toISOString().split("T")[0];
+    const todays = getISTToday();
     if (!formData.joinDate || formData.joinDate > todays)
       newErrors.joinDate = true;
 
@@ -431,7 +440,7 @@ function NewMemberForm({ onBack }) {
         planType: "Weight Gain",
         selectedPlanId: "",
         duration: "1 Month",
-        joinDate: new Date().toISOString().split("T")[0],
+        joinDate: getISTToday(),
         expiryDate: "",
         totalDays: 30,
         branch: formData.branch,
