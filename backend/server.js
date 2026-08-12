@@ -70,6 +70,14 @@ mongoose.connect(process.env.MONGO_URI)
     )
   );
 
+  app.get("/api/server-time", (req, res) => {
+  res.json({
+    serverTime: new Date().toString(),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    utc: new Date().toISOString(),
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () =>
