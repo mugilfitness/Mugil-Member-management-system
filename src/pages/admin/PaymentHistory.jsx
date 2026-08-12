@@ -539,17 +539,17 @@ function PaymentHistory() {
         </div>
       </div>
 
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-[#020617] rounded-[32px] p-8 sm:p-10 text-white shadow-[0_20px_60px_-15px_rgba(30,27,75,0.8)] border border-white/10 group">
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-[#020617] rounded-[14pxpx] p-8 sm:p-10 text-white shadow-[0_20px_60px_-15px_rgba(30,27,75,0.8)] border border-white/10 group">
         {/* Premium Ambient Glow Effects */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#4d3df7]/20 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3 transition-all duration-700 group-hover:bg-[#4d3df7]/30" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-[14px] blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4" />
 
         <div className="relative z-10">
           <div className="flex flex-col lg:flex-row justify-between gap-8 items-start lg:items-center">
             {/* Identity & Metadata Segment */}
             <div className="space-y-6">
               <div>
-                <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-4">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight mb-4">
                   {member.fullName}
                 </h1>
 
@@ -586,26 +586,26 @@ function PaymentHistory() {
 
               {/* Glassmorphism Tags */}
               <div className="flex flex-wrap gap-3">
-                <span className="px-3.5 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors rounded-[12px] text-xs font-black uppercase tracking-widest text-indigo-50 shadow-sm">
+                <span className="px-3.5 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors rounded-[12px] text-xs font-semibold uppercase tracking-widest text-indigo-50 shadow-sm">
                   ID : {member.memberId}
                 </span>
-                <span className="px-3.5 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors rounded-[12px] text-xs font-black uppercase tracking-widest text-indigo-50 shadow-sm">
+                <span className="px-3.5 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors rounded-[12px] text-xs font-semibold uppercase tracking-widest text-indigo-50 shadow-sm">
                   {member.planType}
                 </span>
-                <span className="px-3.5 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors rounded-[12px] text-xs font-black uppercase tracking-widest text-indigo-50 shadow-sm">
+                <span className="px-3.5 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors rounded-[12px] text-xs font-semibold uppercase tracking-widest text-indigo-50 shadow-sm">
                   {member.duration}
                 </span>
               </div>
             </div>
 
             {/* Premium Status Node */}
-            <div className="w-full lg:w-auto bg-white/5 backdrop-blur-xl border border-white/10 p-5 sm:p-6 rounded-[24px] shadow-lg shrink-0 flex flex-col justify-center">
-              <p className="text-indigo-200/70 text-[10px] font-black uppercase tracking-widest mb-3 text-left lg:text-right">
+            <div className="w-full lg:w-auto bg-white/5 backdrop-blur-xl border border-white/10 p-5 sm:p-6 rounded-[14px] shadow-lg shrink-0 flex flex-col justify-center">
+              <p className="text-indigo-200/70 text-[10px] font-bold uppercase tracking-widest mb-3 text-left lg:text-right">
                 Status
               </p>
               <span
                 className={`
-            inline-flex items-center justify-center px-5 py-3 rounded-[14px] text-[11px] font-black uppercase tracking-widest border shadow-inner transition-all
+            inline-flex items-center justify-center px-5 py-3 rounded-[14px] text-[11px] font-bold uppercase tracking-widest border shadow-inner transition-all
             ${
               member.paymentStatus === "Fully Paid"
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5"
@@ -615,7 +615,7 @@ function PaymentHistory() {
               >
                 {/* Subtle Indicator Dot */}
                 <span
-                  className={`w-1.5 h-1.5 rounded-full mr-2 shrink-0 ${member.paymentStatus === "Fully Paid" ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`}
+                  className={`w-1.5 h-1.5 rounded-[14px] mr-2 shrink-0 ${member.paymentStatus === "Fully Paid" ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`}
                 ></span>
                 {member.paymentStatus}
               </span>
@@ -626,8 +626,8 @@ function PaymentHistory() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-6">
         {/* Card 1: Total Fee */}
-        <div className="bg-white border border-slate-200/60 rounded-[24px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-300 flex flex-col justify-between group">
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+        <div className="bg-white border border-slate-200/60 rounded-[14px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-300 flex flex-col justify-between group">
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
             Total Fee
           </p>
           <h3 className="text-3xl font-black text-slate-900 font-mono tracking-tighter">
@@ -636,10 +636,10 @@ function PaymentHistory() {
         </div>
 
         {/* Card 2: Paid Amount */}
-        <div className="bg-white border border-emerald-100/80 rounded-[24px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="bg-white border border-emerald-100/80 rounded-[14px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-[14px] blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-emerald-600/70 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-emerald-600/70 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Paid Amount
             </p>
             <h3 className="text-3xl font-black text-emerald-600 font-mono tracking-tighter group-hover:scale-105 origin-left transition-transform duration-300">
@@ -649,10 +649,10 @@ function PaymentHistory() {
         </div>
 
         {/* Card 3: Balance */}
-        <div className="bg-white border border-rose-100/80 rounded-[24px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-rose-200 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="bg-white border border-rose-100/80 rounded-[14px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-rose-200 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-[14px] blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-rose-400/80 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-rose-400/80 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Balance
             </p>
             <h3 className="text-3xl font-black text-rose-500 font-mono tracking-tighter group-hover:scale-105 origin-left transition-transform duration-300">
@@ -662,10 +662,10 @@ function PaymentHistory() {
         </div>
 
         {/* Card 4: Payments */}
-        <div className="bg-white border border-indigo-100/80 rounded-[24px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="bg-white border border-indigo-100/80 rounded-[14px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-[14px] blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-indigo-400/80 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-indigo-400/80 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Payments
             </p>
             <h3 className="text-3xl font-black text-[#4d3df7] font-mono tracking-tighter group-hover:scale-105 origin-left transition-transform duration-300">
@@ -674,7 +674,7 @@ function PaymentHistory() {
           </div>
         </div>
       </div>
-      <div className="bg-white border border-slate-200/60 rounded-[28px] p-6 sm:p-8 shadow-sm mt-6">
+      <div className="bg-white border border-slate-200/60 rounded-[14px] p-6 sm:p-8 shadow-sm mt-6">
         <h2 className="text-lg font-black text-slate-900 tracking-tight mb-6">
           Member Details
         </h2>
@@ -682,7 +682,7 @@ function PaymentHistory() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Mobile */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Mobile
             </p>
             <p className="text-base font-black text-slate-800 font-mono">
@@ -692,7 +692,7 @@ function PaymentHistory() {
 
           {/* Branch */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Branch
             </p>
             <p className="text-base font-black text-slate-800">
@@ -702,7 +702,7 @@ function PaymentHistory() {
 
           {/* Join Date */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Join Date
             </p>
             <p className="text-base font-black text-slate-800">
@@ -718,7 +718,7 @@ function PaymentHistory() {
 
           {/* Expiry Date */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Expiry Date
             </p>
             <p className="text-base font-black text-slate-800">
@@ -733,9 +733,9 @@ function PaymentHistory() {
           </div>
         </div>
       </div>
-      <div className="bg-white border border-slate-200/60 rounded-[28px] p-6 sm:p-8 shadow-sm mt-6">
+      <div className="bg-white border border-slate-200/60 rounded-[14px] p-6 sm:p-8 shadow-sm mt-6">
         <div className="flex justify-between items-end mb-4">
-          <h2 className="text-lg font-black text-slate-900 tracking-tight">
+          <h2 className="text-lg font-bold text-slate-900 tracking-tight">
             Payment Progress
           </h2>
           <span className="text-3xl font-black text-[#4d3df7] font-mono tracking-tighter leading-none">
@@ -743,7 +743,7 @@ function PaymentHistory() {
           </span>
         </div>
 
-        <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden mb-4">
+        <div className="w-full h-4 bg-slate-100 rounded-[14px] overflow-hidden mb-4">
           <div
             className="h-full bg-gradient-to-r from-[#4d3df7] to-indigo-400 rounded-full relative transition-all duration-1000 ease-out"
             style={{
@@ -757,7 +757,7 @@ function PaymentHistory() {
 
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
               Paid
             </span>
             <span className="text-sm font-black text-emerald-500 font-mono">
@@ -766,7 +766,7 @@ function PaymentHistory() {
           </div>
 
           <div className="flex flex-col text-right">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
               Total
             </span>
             <span className="text-sm font-black text-slate-900 font-mono">
@@ -775,15 +775,15 @@ function PaymentHistory() {
           </div>
         </div>
       </div>
-      <div className="bg-white border border-slate-200/60 rounded-[28px] p-6 sm:p-8 shadow-sm mt-6">
-        <h2 className="text-lg font-black text-slate-900 tracking-tight mb-6">
+      <div className="bg-white border border-slate-200/60 rounded-[14px] p-6 sm:p-8 shadow-sm mt-6">
+        <h2 className="text-lg font-bold text-slate-900 tracking-tight mb-6">
           Membership Summary
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Plan */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Plan
             </p>
             <p className="text-base font-black text-slate-800">
@@ -793,7 +793,7 @@ function PaymentHistory() {
 
           {/* Duration */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Duration
             </p>
             <p className="text-base font-black text-slate-800">
@@ -803,17 +803,17 @@ function PaymentHistory() {
 
           {/* Trainer */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Trainer
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.trainerAssigned}
             </p>
           </div>
 
           {/* Goal */}
           <div className="bg-slate-50/60 border border-slate-100 rounded-[20px] p-5 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300">
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Goal
             </p>
             <p className="text-base font-black text-slate-800">
@@ -823,7 +823,7 @@ function PaymentHistory() {
 
           {/* Days Left (Highlighted Specially) */}
           <div className="bg-indigo-50/50 border border-indigo-100/80 rounded-[20px] p-5 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300">
-            <p className="text-indigo-400/80 text-[10px] font-black uppercase tracking-widest mb-1.5">
+            <p className="text-indigo-400/80 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Days Left
             </p>
             <p className="text-base font-black text-[#4d3df7]">{daysLeft}</p>
@@ -831,7 +831,7 @@ function PaymentHistory() {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl p-6 shadow-sm border mt-6">
+      <div className="bg-white rounded-[14px] p-6 shadow-sm border mt-6">
         <h2 className="text-xl font-black mb-5">Payment Timeline</h2>
 
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-sidebar-scroll">
