@@ -499,8 +499,15 @@ Amount : ₹${amountPaid}
     );
   }
 
-  const status = STATUS_STYLES[member.status] || STATUS_FALLBACK;
-  const StatusIcon = status.icon;
+const displayStatus =
+  daysLeft < 0
+    ? "Expired"
+    : daysLeft <= 7
+      ? "Expiring Soon"
+      : "Active";
+
+const status = STATUS_STYLES[displayStatus] || STATUS_FALLBACK;
+const StatusIcon = status.icon;
   const quickAmounts = selectedPlan
     ? [
         Math.max(1, Math.floor(selectedPlan.finalPrice * 0.25)),
@@ -594,7 +601,7 @@ Amount : ₹${amountPaid}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
               <StatusIcon size={12} />
-              {member.status}
+              {displayStatus}
             </span>
           </div>
 
