@@ -675,7 +675,7 @@ function PaymentHistory() {
         </div>
       </div>
       <div className="bg-white border border-slate-200/60 rounded-[14px] p-6 sm:p-8 shadow-sm mt-6">
-        <h2 className="text-lg font-black text-slate-900 tracking-tight mb-6">
+        <h2 className="text-lg font-bold text-slate-900 tracking-tight mb-6">
           Member Details
         </h2>
 
@@ -695,7 +695,7 @@ function PaymentHistory() {
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Branch
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.branch}
             </p>
           </div>
@@ -705,7 +705,7 @@ function PaymentHistory() {
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Join Date
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.joinDate
                 ? new Date(member.joinDate).toLocaleDateString("en-IN", {
                     day: "2-digit",
@@ -721,7 +721,7 @@ function PaymentHistory() {
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Expiry Date
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.expiryDate
                 ? new Date(member.expiryDate).toLocaleDateString("en-IN", {
                     day: "2-digit",
@@ -738,7 +738,7 @@ function PaymentHistory() {
           <h2 className="text-lg font-bold text-slate-900 tracking-tight">
             Payment Progress
           </h2>
-          <span className="text-3xl font-black text-[#4d3df7] font-mono tracking-tighter leading-none">
+          <span className="text-3xl font-bold text-[#4d3df7] font-mono tracking-tighter leading-none">
             {progress}%
           </span>
         </div>
@@ -786,7 +786,7 @@ function PaymentHistory() {
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Plan
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.planType}
             </p>
           </div>
@@ -796,7 +796,7 @@ function PaymentHistory() {
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Duration
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.duration}
             </p>
           </div>
@@ -816,7 +816,7 @@ function PaymentHistory() {
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Goal
             </p>
-            <p className="text-base font-black text-slate-800">
+            <p className="text-base font-bold text-slate-800">
               {member.fitnessGoal}
             </p>
           </div>
@@ -826,13 +826,13 @@ function PaymentHistory() {
             <p className="text-indigo-400/80 text-[10px] font-bold uppercase tracking-widest mb-1.5">
               Days Left
             </p>
-            <p className="text-base font-black text-[#4d3df7]">{daysLeft}</p>
+            <p className="text-base font-bold text-[#4d3df7]">{daysLeft}</p>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-[14px] p-6 shadow-sm border mt-6">
-        <h2 className="text-xl font-black mb-5">Payment Timeline</h2>
+        <h2 className="text-xl font-bold mb-5">Payment Timeline</h2>
 
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-sidebar-scroll">
           {reversedPayments.length > 0 ? (
