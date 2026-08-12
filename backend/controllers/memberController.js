@@ -253,27 +253,39 @@ const updateMember = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    const newPlanId = member.selectedPlanId;
+  const newPlanId = member.selectedPlanId;
 
 if (
   oldPlanId &&
   newPlanId &&
   oldPlanId.toString() !== newPlanId.toString()
 ) {
+  const now = new Date();
+
+  // Member is considered active only when
+const wasActive = Boolean(
+  existingMember.expiryDate &&
+  new Date(existingMember.expiryDate).getTime() > now.getTime()
+);
+
+  // Remove member from old plan
   await Plan.findByIdAndUpdate(
     oldPlanId,
     {
       $inc: {
         memberCount: -1,
+        activeMembers: wasActive ? -1 : 0,
       },
     }
   );
 
+  // Add member to new plan
   await Plan.findByIdAndUpdate(
     newPlanId,
     {
       $inc: {
         memberCount: 1,
+        activeMembers: wasActive ? 1 : 0,
       },
     }
   );
@@ -375,20 +387,23 @@ const deleteMember = async (req, res) => {
       });
     }
 
-    if (member.selectedPlanId) {
-      await Plan.findByIdAndUpdate(
-        member.selectedPlanId,
-        {
-          $inc: {
-            memberCount: -1,
-            activeMembers:
-              member.status === "Active"
-                ? -1
-                : 0,
-          },
-        }
-      );
+if (member.selectedPlanId) {
+  const now = new Date();
+
+  const isActive =
+    member.expiryDate &&
+    new Date(member.expiryDate).getTime() > now.getTime();
+
+  await Plan.findByIdAndUpdate(
+    member.selectedPlanId,
+    {
+      $inc: {
+        memberCount: -1,
+        activeMembers: isActive ? -1 : 0,
+      },
     }
+  );
+}
 
     await member.deleteOne();
 
@@ -559,6 +574,7 @@ const renewMember = async (req, res) => {
     }
     const oldPlanId = member.selectedPlanId;
 
+
     const plan = await Plan.findById(req.body.selectedPlanId);
 
     if (!plan) {
@@ -610,7 +626,13 @@ const renewMember = async (req, res) => {
 
     const now = new Date();
 
-const istNow = new Date(now.getTime() + IST_OFFSET_MS);
+
+
+const wasExpired =
+  !member.expiryDate ||
+  new Date(member.expiryDate).getTime() <= now.getTime();
+
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS);
 
 const istToday = new Date(
   Date.UTC(
@@ -843,11 +865,7 @@ const receiptNo = `REN-${receiptDate
       },
     });
 
-// Update plan member counts
-// Update plan member counts
-const wasExpired =
-  !member.expiryDate ||
-  new Date(member.expiryDate).getTime() <= now.getTime();
+
 
 if (
   oldPlanId &&
