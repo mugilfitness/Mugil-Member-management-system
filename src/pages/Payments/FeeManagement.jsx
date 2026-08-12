@@ -44,9 +44,9 @@ import {
 function FeeManagement() {
   const navigate = useNavigate();
 
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  // const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-  const [historyMember, setHistoryMember] = useState(null);
+  // const [historyMember, setHistoryMember] = useState(null);
   const [branchFilter, setBranchFilter] = useState("ALL");
 
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -60,7 +60,7 @@ function FeeManagement() {
     fetchMembers();
   }, []);
 
-  const [memberSearch, setMemberSearch] = useState("");
+  // const [memberSearch, setMemberSearch] = useState("");
 
   const [showReportMenu, setShowReportMenu] = useState(false);
 
@@ -103,6 +103,31 @@ function FeeManagement() {
     paymentMethod: "Cash",
     note: "",
   });
+
+  const getISTDateParts = (date = new Date()) => {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  const parts = formatter.formatToParts(new Date(date));
+
+  return {
+    year: Number(parts.find((p) => p.type === "year").value),
+    month: Number(parts.find((p) => p.type === "month").value),
+    day: Number(parts.find((p) => p.type === "day").value),
+  };
+};
+
+const getISTDayNumber = (date = new Date()) => {
+  const { year, month, day } = getISTDateParts(date);
+
+  return Date.UTC(year, month - 1, day);
+};
+
+
 
   const now = new Date();
 const paymentData = transactions.map((member) => {
@@ -153,28 +178,61 @@ const paymentData = transactions.map((member) => {
       // -------------------------
       let dateMatches = true;
 
-      if (dateFilter === "TODAY") {
-        dateMatches =
-          paymentDate.toDateString() === now.toDateString();
-      }
+     if (dateFilter === "TODAY") {
+  const todayIST = getISTDateParts(now);
+  const paymentIST = getISTDateParts(paymentDate);
 
-      if (dateFilter === "THIS_WEEK") {
-        const weekAgo = new Date(now);
-        weekAgo.setDate(now.getDate() - 7);
+  dateMatches =
+    paymentIST.year === todayIST.year &&
+    paymentIST.month === todayIST.month &&
+    paymentIST.day === todayIST.day;
+}
 
-        dateMatches = paymentDate >= weekAgo;
-      }
+ if (dateFilter === "THIS_WEEK") {
+  const todayIST = getISTDateParts(now);
 
-      if (dateFilter === "THIS_MONTH") {
-        dateMatches =
-          paymentDate.getMonth() === now.getMonth() &&
-          paymentDate.getFullYear() === now.getFullYear();
-      }
+  const todayISTDate = new Date(
+    Date.UTC(
+      todayIST.year,
+      todayIST.month - 1,
+      todayIST.day
+    )
+  );
 
-      if (dateFilter === "THIS_YEAR") {
-        dateMatches =
-          paymentDate.getFullYear() === now.getFullYear();
-      }
+  const weekAgoIST = new Date(todayISTDate);
+  weekAgoIST.setUTCDate(weekAgoIST.getUTCDate() - 7);
+
+  const paymentIST = getISTDateParts(paymentDate);
+
+  const paymentISTDate = new Date(
+    Date.UTC(
+      paymentIST.year,
+      paymentIST.month - 1,
+      paymentIST.day
+    )
+  );
+
+  dateMatches =
+    paymentISTDate >= weekAgoIST &&
+    paymentISTDate <= todayISTDate;
+}
+
+   if (dateFilter === "THIS_MONTH") {
+  const todayIST = getISTDateParts(now);
+  const paymentIST = getISTDateParts(paymentDate);
+
+  dateMatches =
+    paymentIST.month === todayIST.month &&
+    paymentIST.year === todayIST.year;
+}
+
+    if (dateFilter === "THIS_YEAR") {
+  const todayIST = getISTDateParts(now);
+  const paymentIST = getISTDateParts(paymentDate);
+
+  dateMatches =
+    paymentIST.year === todayIST.year;
+}
 
       return dateMatches && modeMatches;
     });
@@ -218,16 +276,19 @@ const paymentData = transactions.map((member) => {
       member.paymentMethod ||
       "Unknown",
 
-    date: paymentDate
-      ? new Date(paymentDate).toLocaleDateString("en-IN")
-      : "-",
+date: paymentDate
+  ? new Date(paymentDate).toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    })
+  : "-",
 
-    time: paymentDate
-      ? new Date(paymentDate).toLocaleTimeString("en-IN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : "-",
+time: paymentDate
+  ? new Date(paymentDate).toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  : "-",
 
     status: member.paymentStatus,
 
@@ -296,33 +357,66 @@ const filteredCollection = filteredTx.reduce((sum, member) => {
 
   const filteredPayments = payments.filter((payment) => {
     const paymentDate = new Date(payment.paymentDate);
-    const today = new Date();
+    
 
     // Date filter
     let dateMatches = true;
 
-    if (dateFilter === "TODAY") {
-      dateMatches =
-        paymentDate.toDateString() === today.toDateString();
-    }
+  if (dateFilter === "TODAY") {
+  const todayIST = getISTDateParts(now);
+  const paymentIST = getISTDateParts(paymentDate);
 
-    if (dateFilter === "THIS_WEEK") {
-      const weekAgo = new Date();
-      weekAgo.setDate(today.getDate() - 7);
+  dateMatches =
+    paymentIST.year === todayIST.year &&
+    paymentIST.month === todayIST.month &&
+    paymentIST.day === todayIST.day;
+}
 
-      dateMatches = paymentDate >= weekAgo;
-    }
+ if (dateFilter === "THIS_WEEK") {
+  const todayIST = getISTDateParts(now);
 
-    if (dateFilter === "THIS_MONTH") {
-      dateMatches =
-        paymentDate.getMonth() === today.getMonth() &&
-        paymentDate.getFullYear() === today.getFullYear();
-    }
+  const todayISTDate = new Date(
+    Date.UTC(
+      todayIST.year,
+      todayIST.month - 1,
+      todayIST.day
+    )
+  );
 
-    if (dateFilter === "THIS_YEAR") {
-      dateMatches =
-        paymentDate.getFullYear() === today.getFullYear();
-    }
+  const weekAgoIST = new Date(todayISTDate);
+  weekAgoIST.setUTCDate(weekAgoIST.getUTCDate() - 7);
+
+  const paymentIST = getISTDateParts(paymentDate);
+
+  const paymentISTDate = new Date(
+    Date.UTC(
+      paymentIST.year,
+      paymentIST.month - 1,
+      paymentIST.day
+    )
+  );
+
+  dateMatches =
+    paymentISTDate >= weekAgoIST &&
+    paymentISTDate <= todayISTDate;
+}
+
+  if (dateFilter === "THIS_MONTH") {
+  const todayIST = getISTDateParts(now);
+  const paymentIST = getISTDateParts(paymentDate);
+
+  dateMatches =
+    paymentIST.month === todayIST.month &&
+    paymentIST.year === todayIST.year;
+}
+
+ if (dateFilter === "THIS_YEAR") {
+  const todayIST = getISTDateParts(now);
+  const paymentIST = getISTDateParts(paymentDate);
+
+  dateMatches =
+    paymentIST.year === todayIST.year;
+}
 
     // Payment mode filter
     const method = (
@@ -367,17 +461,9 @@ const filteredCollection = filteredTx.reduce((sum, member) => {
       m.paymentHistory?.reduce((sum, p) => sum + Number(p.amount || 0), 0) || 0,
   }));
 
-  const handleCollect = (member) => {
-    setSelectedMember(member);
-
-    setPaymentForm({
-      amount: "",
-      paymentMethod: "Cash",
-      note: "",
-    });
-
-    navigate(`/admin/payments/collect/${member._id}`);
-  };
+const handleCollect = (member) => {
+  navigate(`/admin/payments/collect/${member._id}`);
+};
   const renderStatus = (status) => {
     switch (status) {
       case "Fully Paid":
@@ -418,79 +504,132 @@ const filteredCollection = filteredTx.reduce((sum, member) => {
     0,
   );
 
-  const overdueMembers = transactions.filter((member) => {
-    if (!member.expiryDate) return false;
-    const daysLeft = Math.ceil(
-      (new Date(member.expiryDate) - new Date()) / (1000 * 60 * 60 * 24),
-    );
-    return daysLeft < 0 && daysLeft >= -180;
-  }).length;
+const todayIST = getISTDateParts(now);
 
-  const totalExpiredMembers = transactions.filter((member) => {
+const todayISTDate = new Date(
+  Date.UTC(
+    todayIST.year,
+    todayIST.month - 1,
+    todayIST.day
+  )
+);
+
+const overdueMembers = transactions.filter((member) => {
   if (!member.expiryDate) return false;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const expiryIST = getISTDateParts(member.expiryDate);
 
-  const expiry = new Date(member.expiryDate);
-  expiry.setHours(0, 0, 0, 0);
+  const expiryISTDate = new Date(
+    Date.UTC(
+      expiryIST.year,
+      expiryIST.month - 1,
+      expiryIST.day
+    )
+  );
 
-  return expiry < today;
+  const daysOverdue = Math.floor(
+    (todayISTDate - expiryISTDate) / (1000 * 60 * 60 * 24)
+  );
+
+  return daysOverdue > 0 && daysOverdue <= 180;
 }).length;
 
-  const todayCollection = transactions.reduce((sum, member) => {
-    const todayPayments =
-      member.paymentHistory
-        ?.filter(
-          (payment) =>
-            new Date(payment.paymentDate).toDateString() ===
-            new Date().toDateString(),
-        )
-        ?.reduce((pSum, payment) => pSum + Number(payment.amount || 0), 0) || 0;
+const totalExpiredMembers = transactions.filter((member) => {
+  if (!member.expiryDate) return false;
 
-    return sum + todayPayments;
-  }, 0);
+  const expiryIST = getISTDateParts(member.expiryDate);
 
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  const expiryISTDate = new Date(
+    Date.UTC(
+      expiryIST.year,
+      expiryIST.month - 1,
+      expiryIST.day
+    )
+  );
 
-  const thisMonthCollection = transactions.reduce((sum, member) => {
-    const monthPayments =
-      member.paymentHistory
-        ?.filter((payment) => {
-          const date = new Date(payment.paymentDate);
+  return expiryISTDate < todayISTDate;
+}).length;
 
-          return (
-            date.getMonth() === currentMonth &&
-            date.getFullYear() === currentYear
-          );
-        })
-        ?.reduce((pSum, payment) => pSum + Number(payment.amount || 0), 0) || 0;
+const todayCollection = transactions.reduce((sum, member) => {
+  const todayPayments =
+    member.paymentHistory
+      ?.filter((payment) => {
+        const paymentIST = getISTDateParts(payment.paymentDate);
+        const todayIST = getISTDateParts(now);
 
-    return sum + monthPayments;
-  }, 0);
+        return (
+          paymentIST.year === todayIST.year &&
+          paymentIST.month === todayIST.month &&
+          paymentIST.day === todayIST.day
+        );
+      })
+      ?.reduce(
+        (pSum, payment) => pSum + Number(payment.amount || 0),
+        0
+      ) || 0;
 
-  const previousMonth = new Date();
-  const currentPending = transactions
-    .filter((member) => member.paymentStatus === "Balance Pending")
-    .reduce((sum, member) => sum + Number(member.balanceAmount || 0), 0);
-  previousMonth.setMonth(previousMonth.getMonth() - 1);
+  return sum + todayPayments;
+}, 0);
 
-  const previousMonthCollection = transactions.reduce((sum, member) => {
-    const monthPayments =
-      member.paymentHistory
-        ?.filter((payment) => {
-          const date = new Date(payment.paymentDate);
+  // const todayIST = getISTDateParts(now);
 
-          return (
-            date.getMonth() === previousMonth.getMonth() &&
-            date.getFullYear() === previousMonth.getFullYear()
-          );
-        })
-        ?.reduce((pSum, payment) => pSum + Number(payment.amount || 0), 0) || 0;
+const thisMonthCollection = transactions.reduce((sum, member) => {
+  const monthPayments =
+    member.paymentHistory
+      ?.filter((payment) => {
+        const paymentIST = getISTDateParts(payment.paymentDate);
 
-    return sum + monthPayments;
-  }, 0);
+        return (
+          paymentIST.month === todayIST.month &&
+          paymentIST.year === todayIST.year
+        );
+      })
+      ?.reduce(
+        (pSum, payment) => pSum + Number(payment.amount || 0),
+        0
+      ) || 0;
+
+  return sum + monthPayments;
+}, 0);
+
+// const todayIST = getISTDateParts(now);
+
+const previousMonthDate = new Date(
+  Date.UTC(
+    todayIST.year,
+    todayIST.month - 2,
+    1
+  )
+);
+
+const previousMonthYear = previousMonthDate.getUTCFullYear();
+const previousMonthNumber = previousMonthDate.getUTCMonth() + 1;
+
+const currentPending = transactions
+  .filter((member) => member.paymentStatus === "Balance Pending")
+  .reduce(
+    (sum, member) => sum + Number(member.balanceAmount || 0),
+    0
+  );
+
+const previousMonthCollection = transactions.reduce((sum, member) => {
+  const monthPayments =
+    member.paymentHistory
+      ?.filter((payment) => {
+        const paymentIST = getISTDateParts(payment.paymentDate);
+
+        return (
+          paymentIST.year === previousMonthYear &&
+          paymentIST.month === previousMonthNumber
+        );
+      })
+      ?.reduce(
+        (pSum, payment) => pSum + Number(payment.amount || 0),
+        0
+      ) || 0;
+
+  return sum + monthPayments;
+}, 0);
 
   const collectionGrowth =
     previousMonthCollection > 0
@@ -502,20 +641,23 @@ const filteredCollection = filteredTx.reduce((sum, member) => {
       : thisMonthCollection > 0
         ? 100
         : 0;
-  const previousMonthPending = transactions
-    .filter((member) => {
-      if (member.paymentStatus !== "Balance Pending") return false;
+const previousMonthPending = transactions
+  .filter((member) => {
+    if (member.paymentStatus !== "Balance Pending") return false;
 
-      if (!member.expiryDate) return false;
+    if (!member.expiryDate) return false;
 
-      const expiryDate = new Date(member.expiryDate);
+    const expiryIST = getISTDateParts(member.expiryDate);
 
-      return (
-        expiryDate.getMonth() === previousMonth.getMonth() &&
-        expiryDate.getFullYear() === previousMonth.getFullYear()
-      );
-    })
-    .reduce((sum, member) => sum + Number(member.balanceAmount || 0), 0);
+    return (
+      expiryIST.year === previousMonthYear &&
+      expiryIST.month === previousMonthNumber
+    );
+  })
+  .reduce(
+    (sum, member) => sum + Number(member.balanceAmount || 0),
+    0
+  );
 
   const pendingGrowth =
     previousMonthPending > 0
@@ -527,21 +669,41 @@ const filteredCollection = filteredTx.reduce((sum, member) => {
         ? 100
         : 0;
 
-  const yesterdayCollection = transactions.reduce((sum, member) => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+const yesterdayCollection = transactions.reduce((sum, member) => {
+  const todayIST = getISTDateParts(now);
 
-    const amount =
-      member.paymentHistory
-        ?.filter((payment) => {
-          const date = new Date(payment.paymentDate);
+  const todayISTDate = new Date(
+    Date.UTC(
+      todayIST.year,
+      todayIST.month - 1,
+      todayIST.day
+    )
+  );
 
-          return date.toDateString() === yesterday.toDateString();
-        })
-        ?.reduce((pSum, payment) => pSum + Number(payment.amount || 0), 0) || 0;
+  todayISTDate.setUTCDate(todayISTDate.getUTCDate() - 1);
 
-    return sum + amount;
-  }, 0);
+  const yesterdayYear = todayISTDate.getUTCFullYear();
+  const yesterdayMonth = todayISTDate.getUTCMonth() + 1;
+  const yesterdayDay = todayISTDate.getUTCDate();
+
+  const amount =
+    member.paymentHistory
+      ?.filter((payment) => {
+        const paymentIST = getISTDateParts(payment.paymentDate);
+
+        return (
+          paymentIST.year === yesterdayYear &&
+          paymentIST.month === yesterdayMonth &&
+          paymentIST.day === yesterdayDay
+        );
+      })
+      ?.reduce(
+        (pSum, payment) => pSum + Number(payment.amount || 0),
+        0
+      ) || 0;
+
+  return sum + amount;
+}, 0);
 
   const todayGrowth =
     yesterdayCollection > 0
@@ -553,15 +715,31 @@ const filteredCollection = filteredTx.reduce((sum, member) => {
         ? 100
         : 0;
 
-  const lastWeekOverdue = transactions.filter((member) => {
-    if (!member.expiryDate) return false;
+const weekAgoISTDate = new Date(todayISTDate);
 
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
+weekAgoISTDate.setUTCDate(
+  weekAgoISTDate.getUTCDate() - 7
+);
 
-    return new Date(member.expiryDate) < weekAgo;
-  }).length;
-  const overdueDifference = overdueMembers - lastWeekOverdue;
+const lastWeekOverdue = transactions.filter((member) => {
+  if (!member.expiryDate) return false;
+
+  const expiryIST = getISTDateParts(member.expiryDate);
+
+  const expiryISTDate = new Date(
+    Date.UTC(
+      expiryIST.year,
+      expiryIST.month - 1,
+      expiryIST.day
+    )
+  );
+
+  return expiryISTDate < weekAgoISTDate;
+}).length;
+
+const overdueDifference =
+  overdueMembers - lastWeekOverdue;
+  // const overdueDifference = overdueMembers - lastWeekOverdue;
 
   const fullyPaidMembers = transactions.filter(
     (member) => member.paymentStatus === "Fully Paid",
@@ -775,14 +953,25 @@ const expiredMembers = expiredCount;
   };
 
 const export30DaysPDF = () => {
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - 30);
+  const todayIST = getISTDayNumber(now);
+  const cutoffIST = todayIST - 30 * 24 * 60 * 60 * 1000;
 
   const filtered = transactions
     .map((member) => {
-      const payments = (member.paymentHistory || []).filter(
-        (payment) => new Date(payment.paymentDate) >= cutoffDate
-      );
+      const payments = (member.paymentHistory || []).filter((payment) => {
+        const paymentTime = new Date(payment.paymentDate);
+
+        if (Number.isNaN(paymentTime.getTime())) {
+          return false;
+        }
+
+        const paymentIST = getISTDayNumber(paymentTime);
+
+        return (
+          paymentIST >= cutoffIST &&
+          paymentIST <= todayIST
+        );
+      });
 
       return {
         ...member,
@@ -794,13 +983,9 @@ const export30DaysPDF = () => {
   const expiredCount = filtered.filter((member) => {
     if (!member.expiryDate) return false;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const expiryIST = getISTDayNumber(member.expiryDate);
 
-    const expiry = new Date(member.expiryDate);
-    expiry.setHours(0, 0, 0, 0);
-
-    return expiry < today;
+    return expiryIST < todayIST;
   }).length;
 
   generateReportPDF(
@@ -812,14 +997,25 @@ const export30DaysPDF = () => {
 };
 
 const export60DaysPDF = () => {
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - 60);
+  const todayIST = getISTDayNumber(now);
+  const cutoffIST = todayIST - 60 * 24 * 60 * 60 * 1000;
 
   const filtered = transactions
     .map((member) => {
-      const payments = (member.paymentHistory || []).filter(
-        (payment) => new Date(payment.paymentDate) >= cutoffDate
-      );
+      const payments = (member.paymentHistory || []).filter((payment) => {
+        const paymentTime = new Date(payment.paymentDate);
+
+        if (Number.isNaN(paymentTime.getTime())) {
+          return false;
+        }
+
+        const paymentIST = getISTDayNumber(paymentTime);
+
+        return (
+          paymentIST >= cutoffIST &&
+          paymentIST <= todayIST
+        );
+      });
 
       return {
         ...member,
@@ -831,13 +1027,9 @@ const export60DaysPDF = () => {
   const expiredCount = filtered.filter((member) => {
     if (!member.expiryDate) return false;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const expiryIST = getISTDayNumber(member.expiryDate);
 
-    const expiry = new Date(member.expiryDate);
-    expiry.setHours(0, 0, 0, 0);
-
-    return expiry < today;
+    return expiryIST < todayIST;
   }).length;
 
   generateReportPDF(

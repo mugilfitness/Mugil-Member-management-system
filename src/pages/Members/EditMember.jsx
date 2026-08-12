@@ -131,6 +131,21 @@ if (!confirmed) return;
     { id: "fitness", label: "Fitness Metrics", icon: FiActivity },
   ];
 
+const formatDate = (date) => {
+  if (!date) return "";
+
+  const value = new Date(date);
+
+  if (isNaN(value.getTime())) return "";
+
+  return value.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata"
+  });
+};
+
   const DetailItem = ({ label, value, icon: Icon }) => (
     <div className="bg-slate-50 rounded-[14px] p-4 border border-slate-100 shadow-sm">
       <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
@@ -364,19 +379,19 @@ navigate(-1);
                   />
                   <DetailItem
                     label="Join Date"
-                    value={formData.joinDate}
+                    value={formatDate(formData.joinDate)}
                     icon={FiClock}
                   />
                   <DetailItem
                     label="Expiry Date"
-                    value={formData.expiryDate}
+                    value={formatDate(formData.expiryDate)}
                     icon={FiCalendar}
                   />
-                  <DetailItem
+                  {/* <DetailItem
                     label="Amount Paid"
-                    value={formData.totalAmount}
+                    value={`₹${formData.amountPaid}`}
                     icon={FiDollarSign}
-                  />
+                  /> */}
                   <DetailItem
                     label="Payment Status"
                     value={formData.paymentStatus}
@@ -612,7 +627,7 @@ navigate(-1);
                         <option>1 Month</option>
                         <option>3 Months</option>
                         <option>6 Months</option>
-                        <option>1 Year</option>
+                        <option>12 Months</option>
                       </select>
                     </div>
                     <div className="space-y-1">

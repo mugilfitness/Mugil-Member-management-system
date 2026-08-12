@@ -19,19 +19,55 @@ import {
 } from "react-icons/fi";
 
 function ViewMember() {
-  const calculateDaysLeft = (expiryDate) => {
-    if (!expiryDate) return null;
+  // const calculateDaysLeft = (expiryDate) => {
+  //   if (!expiryDate) return null;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
 
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0, 0, 0, 0);
+  //   const expiry = new Date(expiryDate);
+  //   expiry.setHours(0, 0, 0, 0);
 
-    const diff = expiry.getTime() - today.getTime();
+  //   const diff = expiry.getTime() - today.getTime();
 
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  };
+  //   return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  // };
+
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+const calculateDaysLeft = (expiryDate) => {
+  if (!expiryDate) return null;
+
+  const now = new Date();
+
+  const istNow = new Date(
+    now.getTime() + IST_OFFSET_MS
+  );
+
+  const todayIST = Date.UTC(
+    istNow.getUTCFullYear(),
+    istNow.getUTCMonth(),
+    istNow.getUTCDate()
+  );
+
+  const expiry = new Date(expiryDate);
+
+  const expiryIST = new Date(
+    expiry.getTime() + IST_OFFSET_MS
+  );
+
+  const expiryISTDate = Date.UTC(
+    expiryIST.getUTCFullYear(),
+    expiryIST.getUTCMonth(),
+    expiryIST.getUTCDate()
+  );
+
+  return Math.ceil(
+    (expiryISTDate - todayIST) /
+      (1000 * 60 * 60 * 24)
+  );
+};
+
   const formatDate = (date) => {
     if (!date) return "-";
 
@@ -43,6 +79,7 @@ function ViewMember() {
       day: "2-digit",
       month: "short",
       year: "numeric",
+       timeZone: "Asia/Kolkata",
     });
   };
   const navigate = useNavigate();

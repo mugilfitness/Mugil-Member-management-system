@@ -29,6 +29,28 @@ const getISTToday = () => {
   ).padStart(2, "0")}-${String(istNow.getUTCDate()).padStart(2, "0")}`;
 };
 
+const addMonthsSafe = (dateString, months) => {
+  const [year, month, day] = dateString.split("-").map(Number);
+
+  const targetMonthIndex = month - 1 + months;
+
+  const targetYear =
+    year + Math.floor(targetMonthIndex / 12);
+
+  const targetMonth =
+    targetMonthIndex % 12;
+
+  const lastDayOfTargetMonth = new Date(
+    Date.UTC(targetYear, targetMonth + 1, 0)
+  ).getUTCDate();
+
+  const safeDay = Math.min(day, lastDayOfTargetMonth);
+
+  return `${targetYear}-${String(targetMonth + 1).padStart(2, "0")}-${String(
+    safeDay
+  ).padStart(2, "0")}`;
+};
+
 function NewMemberForm({ onBack }) {
   const [errors, setErrors] = useState({});
   const [membershipPlans, setMembershipPlans] = useState([]);
@@ -265,18 +287,23 @@ function NewMemberForm({ onBack }) {
     const admissionFee = plan.admissionFee || 0;
 
     // Calculate expiry
-    const joinDate = new Date(formData.joinDate);
-    let months = 1;
-    if (plan.duration === "3 Months") months = 3;
-    if (plan.duration === "6 Months") months = 6;
-    if (plan.duration === "12 Months" || plan.duration === "1 Year")
-      months = 12;
+const joinDate = formData.joinDate;
 
-    const expiryDate = new Date(joinDate);
-    expiryDate.setMonth(expiryDate.getMonth() + months);
-    const totalDays = Math.round(
-      (expiryDate - joinDate) / (1000 * 60 * 60 * 24),
-    );
+let months = 1;
+
+if (plan.duration === "3 Months") months = 3;
+if (plan.duration === "6 Months") months = 6;
+if (plan.duration === "12 Months" || plan.duration === "1 Year")
+  months = 12;
+
+const expiryDate = addMonthsSafe(joinDate, months);
+
+const joinDateObj = new Date(`${joinDate}T00:00:00Z`);
+const expiryDateObj = new Date(`${expiryDate}T00:00:00Z`);
+
+const totalDays = Math.round(
+  (expiryDateObj - joinDateObj) / (1000 * 60 * 60 * 24)
+);
 
     setFormData((prev) => ({
       ...prev,
@@ -286,7 +313,7 @@ function NewMemberForm({ onBack }) {
       admissionFee: admissionFee,
       offerPrice: plan.offerPrice || 0,
       totalAmount: effectivePrice + admissionFee,
-      expiryDate: expiryDate.toISOString().split("T")[0],
+      expiryDate,
       totalDays,
     }));
   };
@@ -297,22 +324,26 @@ function NewMemberForm({ onBack }) {
     const plan = membershipPlans.find((p) => p._id === formData.selectedPlanId);
     if (!plan) return;
 
-    const joinDate = new Date(formData.joinDate);
-    let months = 1;
-    if (plan.duration === "3 Months") months = 3;
-    if (plan.duration === "6 Months") months = 6;
-    if (plan.duration === "12 Months" || plan.duration === "1 Year")
-      months = 12;
+   const joinDate = formData.joinDate;
 
-    const expiryDate = new Date(joinDate);
-    expiryDate.setMonth(expiryDate.getMonth() + months);
-    const totalDays = Math.round(
-      (expiryDate - joinDate) / (1000 * 60 * 60 * 24),
-    );
+let months = 1;
 
+if (plan.duration === "3 Months") months = 3;
+if (plan.duration === "6 Months") months = 6;
+if (plan.duration === "12 Months" || plan.duration === "1 Year")
+  months = 12;
+
+const expiryDate = addMonthsSafe(joinDate, months);
+
+const joinDateObj = new Date(`${joinDate}T00:00:00Z`);
+const expiryDateObj = new Date(`${expiryDate}T00:00:00Z`);
+
+const totalDays = Math.round(
+  (expiryDateObj - joinDateObj) / (1000 * 60 * 60 * 24)
+);
     setFormData((prev) => ({
       ...prev,
-      expiryDate: expiryDate.toISOString().split("T")[0],
+      expiryDate,
       totalDays,
     }));
   }, [formData.joinDate]);

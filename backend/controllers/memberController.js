@@ -1,6 +1,7 @@
 const Member = require("../models/Member");
 const Plan = require("../models/Plan");
 const Counter = require("../models/Counter");
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
 
 
@@ -82,15 +83,28 @@ req.body.memberId = memberId;
           }
         );
       }
+const receiptDate = new Date(
+  new Date().getTime() + IST_OFFSET_MS
+);
+
+const receiptNo =
+  `TXN-${receiptDate
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "")}-${Date.now()
+      .toString()
+      .slice(-6)}`;
 
       member.paymentHistory.push({
-        receiptNo:
-          `TXN-${new Date()
-            .toISOString()
-            .slice(0, 10)
-            .replace(/-/g, "")}-${Date.now()
-              .toString()
-              .slice(-6)}`,
+        // receiptNo:
+        //   `TXN-${new Date()
+        //     .toISOString()
+        //     .slice(0, 10)
+        //     .replace(/-/g, "")}-${Date.now()
+        //       .toString()
+        //       .slice(-6)}`,
+
+        receiptNo,
 
         amount: initialAmountPaid,
 
@@ -175,6 +189,7 @@ const getMemberById = async (req, res) => {
 const updateMember = async (req, res) => {
   try {
     const existingMember = await Member.findById(req.params.id);
+ 
 
     if (!existingMember) {
       return res.status(404).json({
@@ -183,11 +198,25 @@ const updateMember = async (req, res) => {
       });
     }
 
+       const oldPlanId = existingMember.selectedPlanId;
+
     const oldAmountPaid = Number(existingMember.amountPaid || 0);
     const newAmountPaid =
+
       req.body.amountPaid !== undefined
         ? Number(req.body.amountPaid)
         : oldAmountPaid;
+      
+      if (
+  req.body.amountPaid !== undefined &&
+  newAmountPaid < oldAmountPaid
+) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Paid amount cannot be reduced. Please use payment correction.",
+  });
+}
 
     if (req.body.amountPaid !== undefined) {
       const totalAmount =
@@ -224,32 +253,88 @@ const updateMember = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    const newPlanId = member.selectedPlanId;
+
+if (
+  oldPlanId &&
+  newPlanId &&
+  oldPlanId.toString() !== newPlanId.toString()
+) {
+  await Plan.findByIdAndUpdate(
+    oldPlanId,
+    {
+      $inc: {
+        memberCount: -1,
+      },
+    }
+  );
+
+  await Plan.findByIdAndUpdate(
+    newPlanId,
+    {
+      $inc: {
+        memberCount: 1,
+      },
+    }
+  );
+}
+
     if (newAmountPaid > oldAmountPaid) {
 
       const diff =
         newAmountPaid - oldAmountPaid;
 
-      member.paymentHistory.push({
-        receiptNo: `TXN-${new Date()
-          .toISOString()
-          .slice(0, 10)
-          .replace(/-/g, "")}-${Date.now()
-            .toString()
-            .slice(-6)}`,
+      // member.paymentHistory.push({
+      //   receiptNo: `TXN-${new Date()
+      //     .toISOString()
+      //     .slice(0, 10)
+      //     .replace(/-/g, "")}-${Date.now()
+      //       .toString()
+      //       .slice(-6)}`,
 
-        amount: diff,
+      //   amount: diff,
 
-        paymentMethod:
-          req.body.paymentMethod || "Cash",
+      //   paymentMethod:
+      //     req.body.paymentMethod || "Cash",
 
-        note: "Balance Payment",
+      //   note: "Balance Payment",
 
-        collectedBy: "Admin",
+      //   collectedBy: "Admin",
 
-        paymentDate: new Date(),
-        balanceAfterPayment:
-          member.balanceAmount
-      });
+      //   paymentDate: new Date(),
+      //   balanceAfterPayment:
+      //     member.balanceAmount
+      // });
+
+      const receiptDate = new Date(
+  new Date().getTime() + IST_OFFSET_MS
+);
+
+const receiptNo =
+  `TXN-${receiptDate
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "")}-${Date.now()
+      .toString()
+      .slice(-6)}`;
+
+member.paymentHistory.push({
+  receiptNo,
+
+  amount: diff,
+
+  paymentMethod:
+    req.body.paymentMethod || "Cash",
+
+  note: "Balance Payment",
+
+  collectedBy: "Admin",
+
+  paymentDate: new Date(),
+
+  balanceAfterPayment:
+    member.balanceAmount
+});
 
       if (member.selectedPlanId) {
         await Plan.findByIdAndUpdate(
@@ -383,14 +468,28 @@ const collectPayment = async (req, res) => {
         ? "Fully Paid"
         : "Balance Pending";
 
+        const receiptDate = new Date(
+  new Date().getTime() + IST_OFFSET_MS
+);
+
+const receiptNo =
+  `TXN-${receiptDate
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "")}-${Date.now()
+      .toString()
+      .slice(-6)}`;
+
     member.paymentHistory.push({
-      receiptNo:
-        `TXN-${new Date()
-          .toISOString()
-          .slice(0, 10)
-          .replace(/-/g, "")}-${Date.now()
-            .toString()
-            .slice(-6)}`,
+      // receiptNo:
+      //   `TXN-${new Date()
+      //     .toISOString()
+      //     .slice(0, 10)
+      //     .replace(/-/g, "")}-${Date.now()
+      //       .toString()
+      //       .slice(-6)}`,
+
+      receiptNo,
 
       amount: paymentAmount,
 
@@ -440,12 +539,6 @@ const collectPayment = async (req, res) => {
 const renewMember = async (req, res) => {
 
   try {
-    console.log("RENEWAL SERVER TIME:", new Date().toString());
-console.log(
-  "RENEWAL SERVER TIMEZONE:",
-  Intl.DateTimeFormat().resolvedOptions().timeZone
-);
-console.log("RENEWAL UTC:", new Date().toISOString());
 
 
     const member = await Member.findById(req.params.id);
@@ -464,6 +557,7 @@ console.log("RENEWAL UTC:", new Date().toISOString());
           "Please collect pending balance before renewing membership.",
       });
     }
+    const oldPlanId = member.selectedPlanId;
 
     const plan = await Plan.findById(req.body.selectedPlanId);
 
@@ -491,36 +585,168 @@ console.log("RENEWAL UTC:", new Date().toISOString());
     }
 
 
-    const today = new Date();
+    // const today = new Date();
 
-    const oldExpiryDate =
-      member.expiryDate || null;
+    // const oldExpiryDate =
+    //   member.expiryDate || null;
 
-    const baseDate =
-      member.expiryDate &&
-        new Date(member.expiryDate) > today
-        ? new Date(member.expiryDate)
-        : today;
+    // const baseDate =
+    //   member.expiryDate &&
+    //     new Date(member.expiryDate) > today
+    //     ? new Date(member.expiryDate)
+    //     : today;
 
-    const newExpiry = new Date(baseDate);
+    // const newExpiry = new Date(baseDate);
 
-    newExpiry.setDate(
-      newExpiry.getDate() + Number(plan.durationDays)
-    );
+    // newExpiry.setDate(
+    //   newExpiry.getDate() + Number(plan.durationDays)
+    // );
 
-    const dueDate = new Date(newExpiry);
+    // const dueDate = new Date(newExpiry);
 
 
 
-    dueDate.setDate(dueDate.getDate() - 7);
+    // dueDate.setDate(dueDate.getDate() - 7);
+
+    const now = new Date();
+
+const istNow = new Date(now.getTime() + IST_OFFSET_MS);
+
+const istToday = new Date(
+  Date.UTC(
+    istNow.getUTCFullYear(),
+    istNow.getUTCMonth(),
+    istNow.getUTCDate(),
+    0,
+    0,
+    0,
+    0
+  )
+);
+
+// const oldExpiryDate =
+//   member.expiryDate || null;
+
+// const expiryTime =
+//   member.expiryDate
+//     ? new Date(member.expiryDate).getTime()
+//     : 0;
+
+// const baseDate =
+//   expiryTime > now.getTime()
+//     ? new Date(member.expiryDate)
+//     : new Date(
+//         istToday.getTime() - IST_OFFSET_MS
+//       );
+
+
+const oldExpiryDate =
+  member.expiryDate || null;
+
+const expiryTime =
+  member.expiryDate
+    ? new Date(member.expiryDate).getTime()
+    : 0;
+
+let baseDate;
+
+if (expiryTime > now.getTime()) {
+  const expiry = new Date(member.expiryDate);
+
+  const expiryIST = new Date(
+    expiry.getTime() + IST_OFFSET_MS
+  );
+
+  baseDate = new Date(
+    Date.UTC(
+      expiryIST.getUTCFullYear(),
+      expiryIST.getUTCMonth(),
+      expiryIST.getUTCDate(),
+      0,
+      0,
+      0,
+      0
+    ) - IST_OFFSET_MS
+  );
+} else {
+  baseDate = new Date(
+    istToday.getTime() - IST_OFFSET_MS
+  );
+}
+
+// const newExpiry = new Date(baseDate);
+
+// newExpiry.setUTCDate(
+//   newExpiry.getUTCDate() +
+//   Number(plan.durationDays)
+// );
+
+
+const durationMonths = {
+  "1 Month": 1,
+  "3 Months": 3,
+  "6 Months": 6,
+  "12 Months": 12,
+};
+
+const monthsToAdd = durationMonths[plan.duration];
+
+if (!monthsToAdd) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid plan duration",
+  });
+}
+
+// Safe calendar-month calculation
+const newExpiry = new Date(baseDate);
+
+const originalDay = newExpiry.getUTCDate();
+
+newExpiry.setUTCDate(1);
+
+newExpiry.setUTCMonth(
+  newExpiry.getUTCMonth() + monthsToAdd
+);
+
+// Get last day of target month
+const lastDayOfTargetMonth = new Date(
+  Date.UTC(
+    newExpiry.getUTCFullYear(),
+    newExpiry.getUTCMonth() + 1,
+    0
+  )
+).getUTCDate();
+
+newExpiry.setUTCDate(
+  Math.min(originalDay, lastDayOfTargetMonth)
+);
+const dueDate = new Date(newExpiry);
+
+dueDate.setUTCDate(
+  dueDate.getUTCDate() - 7
+);
+
+const today = now;
 
     // Receipt
-    const receiptNo = `REN-${new Date()
-      .toISOString()
-      .slice(0, 10)
-      .replace(/-/g, "")}-${Date.now()
-        .toString()
-        .slice(-6)}`;
+    // const receiptNo = `REN-${new Date()
+    //   .toISOString()
+    //   .slice(0, 10)
+    //   .replace(/-/g, "")}-${Date.now()
+    //     .toString()
+    //     .slice(-6)}`;
+
+    const receiptDate = new Date(
+  now.getTime() + IST_OFFSET_MS
+);
+
+const receiptNo = `REN-${receiptDate
+  .toISOString()
+  .slice(0, 10)
+  .replace(/-/g, "")}-${Date.now()
+  .toString()
+  .slice(-6)}`;
 
 
     member.selectedPlanId = plan._id;
@@ -532,13 +758,16 @@ console.log("RENEWAL UTC:", new Date().toISOString());
 
     member.dueDate = dueDate;
 
-    member.totalDays = plan.durationDays;
+    member.totalDays = Math.round(
+  (newExpiry.getTime() - baseDate.getTime()) /
+  (1000 * 60 * 60 * 24)
+);
 
     member.membershipFee = plan.price;
 
     member.offerPrice = plan.offerPrice || 0;
 
-    member.discount = plan.discount || 0;
+    member.discount = plan.discountAmount || 0;
 
     member.totalAmount = plan.finalPrice;
 
@@ -614,7 +843,51 @@ console.log("RENEWAL UTC:", new Date().toISOString());
       },
     });
 
-    await member.save();
+// Update plan member counts
+// Update plan member counts
+const wasExpired =
+  !member.expiryDate ||
+  new Date(member.expiryDate).getTime() <= now.getTime();
+
+if (
+  oldPlanId &&
+  oldPlanId.toString() !== plan._id.toString()
+) {
+  await Plan.findByIdAndUpdate(
+    oldPlanId,
+    {
+      $inc: {
+        memberCount: -1,
+        activeMembers: wasExpired ? 0 : -1,
+      },
+    }
+  );
+
+  await Plan.findByIdAndUpdate(
+    plan._id,
+    {
+      $inc: {
+        memberCount: 1,
+        activeMembers: 1,
+      },
+    }
+  );
+} else if (
+  oldPlanId &&
+  oldPlanId.toString() === plan._id.toString() &&
+  wasExpired
+) {
+  await Plan.findByIdAndUpdate(
+    plan._id,
+    {
+      $inc: {
+        activeMembers: 1,
+      },
+    }
+  );
+}    
+
+await member.save();
 
     return res.status(200).json({
       success: true,

@@ -178,10 +178,10 @@ function MembershipPlans() {
       }
 
       if (
-        formData.offerStartDate &&
-        formData.offerEndDate &&
-        formData.offerStartDate > formData.offerEndDate
-      ) {
+  formData.offerStartDate &&
+  formData.offerEndDate &&
+  formData.offerStartDate >= formData.offerEndDate
+) {
         warningAlert(
           "Invalid Date",
           "Offer End Date should be after Start Date.",
@@ -239,15 +239,24 @@ function MembershipPlans() {
           price: Number(formData.price),
           admissionFee: Number(formData.admissionFee || 0),
           offerPrice: Number(formData.offerPrice || 0),
-          status:
-            Number(formData.offerPrice) > 0
-              ? "Offer"
-              : formData.status || "Active",
+      status:
+  formData.status === "Inactive"
+    ? "Inactive"
+    : Number(formData.offerPrice) > 0
+      ? "Offer"
+      : "Active",
           description: formData.description,
           features: featureArray,
           isFeatured: formData.isFeatured,
-          offerStartDate: formData.offerStartDate,
-          offerEndDate: formData.offerEndDate,
+offerStartDate:
+  Number(formData.offerPrice) > 0
+    ? formData.offerStartDate
+    : "",
+
+offerEndDate:
+  Number(formData.offerPrice) > 0
+    ? formData.offerEndDate
+    : "",
         });
         successAlert("Plan Created", "Membership Plan created successfully.");
       }
@@ -322,9 +331,13 @@ function MembershipPlans() {
     dashboardFilteredPlans = plans.filter(
       (p) => p.status?.toLowerCase() === "active",
     );
-  } else if (activeDashboardFilter === "OFFER") {
-    dashboardFilteredPlans = plans.filter((p) => Number(p.offerPrice) > 0);
-  } else if (activeDashboardFilter === "INACTIVE") {
+ } else if (activeDashboardFilter === "OFFER") {
+  dashboardFilteredPlans = plans.filter(
+    (p) =>
+      p.status?.toLowerCase() === "offer" &&
+      Number(p.offerPrice) > 0,
+  );
+} else if (activeDashboardFilter === "INACTIVE") {
     dashboardFilteredPlans = plans.filter(
       (p) => p.status?.toLowerCase() === "inactive",
     );
@@ -348,16 +361,23 @@ function MembershipPlans() {
   // ── Counts ─────────────────────────────────────────────────────────────────
   const totalCount = plans.length;
   const activeCount = plans.filter(
-    (p) => p.status?.toLowerCase() !== "inactive",
+     (p) => p.status?.toLowerCase() === "active",
   ).length;
-  const offerCount = plans.filter((p) => Number(p.offerPrice) > 0).length;
+  const offerCount = plans.filter(
+  (p) =>
+    p.status?.toLowerCase() === "offer" &&
+    Number(p.offerPrice) > 0,
+).length;
   const inactiveCount = plans.filter(
     (p) => p.status?.toLowerCase() === "inactive",
   ).length;
   const deletedCount = deletedPlans.length;
+  const selectedPlanIsOffer =
+  selectedPlan?.status?.toLowerCase() === "offer" &&
+  Number(selectedPlan?.offerPrice) > 0;
 
   const finalAmount = selectedPlan
-    ? (Number(selectedPlan.offerPrice) > 0
+    ? (selectedPlanIsOffer
         ? Number(selectedPlan.offerPrice)
         : Number(selectedPlan.price)) + Number(selectedPlan.admissionFee || 0)
     : 0;
@@ -596,7 +616,7 @@ function MembershipPlans() {
                         Revenue
                       </p>
                       <p className="font-black text-emerald-600">
-                        ₹{(plan.revenue || 0).toLocaleString("en-IN")}
+                        ₹{Number(plan.revenue || 0).toLocaleString("en-IN")}
                       </p>
                     </div>
                   </div>
@@ -691,7 +711,9 @@ function MembershipPlans() {
             )}
 
             {filteredPlans.map((plan) => {
-              const isOffer = Number(plan.offerPrice) > 0;
+             const isOffer =
+  plan.status?.toLowerCase() === "offer" &&
+  Number(plan.offerPrice) > 0;
               const status = plan.status || "Active";
 
               return (
@@ -775,13 +797,13 @@ function MembershipPlans() {
                               ₹{Number(plan.price || 0).toLocaleString("en-IN")}
                             </span>
                             <span className="text-emerald-600 font-black text-base sm:text-lg">
-                              ₹{plan.offerPrice.toLocaleString("en-IN")}
+                              ₹{Number(plan.offerPrice || 0).toLocaleString("en-IN")}
                             </span>
                             <span className="bg-red-50 text-red-600 text-[8px] sm:text-[9px] px-2 py-1 rounded-md font-black border border-red-100">
                               SAVE ₹
-                              {(plan.price - plan.offerPrice).toLocaleString(
-                                "en-IN",
-                              )}
+                              {(
+  Number(plan.price || 0) - Number(plan.offerPrice || 0)
+).toLocaleString("en-IN")}
                             </span>
                           </div>
                         )}
@@ -792,7 +814,7 @@ function MembershipPlans() {
                           Admission Fee
                         </span>
                         <span className="font-black text-slate-700 text-sm sm:text-base">
-                          ₹{plan.admissionFee}
+                         ₹{Number(plan.admissionFee || 0).toLocaleString("en-IN")}
                         </span>
                       </div>
 
@@ -810,7 +832,7 @@ function MembershipPlans() {
                             Revenue
                           </p>
                           <h4 className="text-base sm:text-lg font-black text-emerald-600">
-                            ₹{(plan.revenue || 0).toLocaleString("en-IN")}
+                           ₹{Number(plan.revenue || 0).toLocaleString("en-IN")}
                           </h4>
                         </div>
                       </div>
@@ -886,12 +908,12 @@ function MembershipPlans() {
           <div className="relative bg-white w-full max-w-2xl rounded-[28px] sm:rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] ring-1 ring-slate-900/5 overflow-hidden transform transition-all duration-500 scale-100 flex flex-col max-h-[90vh]">
             <div className="relative p-5 sm:p-8 pb-6 sm:pb-8 overflow-hidden border-b border-slate-100 bg-gradient-to-b from-indigo-50/60 to-white">
               <div
-                className={`absolute top-0 right-0 w-64 h-64 sm:w-72 sm:h-72 blur-3xl opacity-20 pointer-events-none rounded-full translate-x-1/3 -translate-y-1/3 ${Number(selectedPlan.offerPrice) > 0 ? "bg-amber-500" : "bg-indigo-500"}`}
+                className={`absolute top-0 right-0 w-64 h-64 sm:w-72 sm:h-72 blur-3xl opacity-20 pointer-events-none rounded-full translate-x-1/3 -translate-y-1/3 ${selectedPlanIsOffer ? "bg-amber-500" : "bg-indigo-500"}`}
               />
               <div className="flex justify-between items-start mb-4 sm:mb-6 relative z-10">
                 <div
                   className={`w-12 h-12 sm:w-16 sm:h-16 rounded-[18px] sm:rounded-[22px] text-white flex items-center justify-center shadow-xl ring-4 shrink-0 ${
-                    Number(selectedPlan.offerPrice) > 0
+                    selectedPlanIsOffer
                       ? "bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/30 ring-amber-50"
                       : "bg-gradient-to-br from-[#4d3df7] to-[#7b61ff] shadow-indigo-500/30 ring-indigo-50"
                   }`}
@@ -915,7 +937,7 @@ function MembershipPlans() {
                   <span className="text-[9px] sm:text-[10px] font-black font-mono tracking-widest text-indigo-600 bg-indigo-500/10 border border-indigo-500/20 px-2 sm:px-3 py-1 rounded-full uppercase">
                     {selectedPlan.planId || "NEW TIER"}
                   </span>
-                  {Number(selectedPlan.offerPrice) > 0 && (
+                  {selectedPlanIsOffer && (
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-500/10 border border-amber-500/20 px-2 sm:px-3 py-1 rounded-full flex items-center gap-1">
                       <FiStar
                         size={12}
@@ -971,22 +993,22 @@ function MembershipPlans() {
                   </p>
                 </div>
                 <div
-                  className={`${Number(selectedPlan.offerPrice) > 0 ? "bg-gradient-to-br from-rose-50 to-orange-50 border-rose-200/60" : "bg-white border-slate-200/60"} border shadow-sm rounded-[20px] sm:rounded-[24px] p-4 sm:p-5`}
+                  className={`${selectedPlanIsOffer ? "bg-gradient-to-br from-rose-50 to-orange-50 border-rose-200/60" : "bg-white border-slate-200/60"} border shadow-sm rounded-[20px] sm:rounded-[24px] p-4 sm:p-5`}
                 >
                   <p
-                    className={`${Number(selectedPlan.offerPrice) > 0 ? "text-rose-500" : "text-slate-400"} text-[9px] sm:text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2`}
+                    className={`${selectedPlanIsOffer ? "text-rose-500" : "text-slate-400"} text-[9px] sm:text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2`}
                   >
                     <FiStar size={14} /> Offer Price
                   </p>
                   <p
-                    className={`${Number(selectedPlan.offerPrice) > 0 ? "text-rose-600" : "text-slate-400"} font-black font-mono text-xl sm:text-2xl`}
+                    className={`${selectedPlanIsOffer ? "text-rose-600" : "text-slate-400"} font-black font-mono text-xl sm:text-2xl`}
                   >
-                    {Number(selectedPlan.offerPrice) > 0
+                    {selectedPlanIsOffer
                       ? `₹${Number(selectedPlan.offerPrice || 0).toLocaleString("en-IN")}`
                       : "N/A"}
                   </p>
                 </div>
-                {Number(selectedPlan.offerPrice) > 0 && (
+                {selectedPlanIsOffer && (
                   <div className="bg-orange-50 border border-orange-100 rounded-[20px] sm:rounded-[24px] p-4 sm:p-5">
                     <p className="text-orange-500 text-[9px] sm:text-[10px] font-black uppercase">
                       Offer Validity
@@ -1071,18 +1093,19 @@ function MembershipPlans() {
                 )}
               </div>
 
-              {Number(selectedPlan.offerPrice) > 0 && (
+              {selectedPlanIsOffer && (
                 <div className="bg-emerald-50 border border-emerald-100 rounded-[20px] sm:rounded-[24px] p-4 sm:p-5 mb-6">
                   <p className="text-emerald-500 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
                     You Save
                   </p>
-                  <h3 className="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">
-                    ₹
-                    {Math.max(
-                      0,
-                      selectedPlan.price - selectedPlan.offerPrice,
-                    ).toLocaleString("en-IN")}
-                  </h3>
+                 <h3 className="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">
+  ₹
+  {Math.max(
+    0,
+    Number(selectedPlan.price || 0) -
+      Number(selectedPlan.offerPrice || 0),
+  ).toLocaleString("en-IN")}
+</h3>
                 </div>
               )}
 

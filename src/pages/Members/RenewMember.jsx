@@ -323,40 +323,134 @@ Amount : ₹${amountPaid}
     }
   };
 
+  // const calculateExpiry = () => {
+  //   if (!selectedPlan || !member) return "-";
+
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
+
+  //   const expiry = member.expiryDate ? new Date(member.expiryDate) : new Date();
+
+  //   expiry.setHours(0, 0, 0, 0);
+
+  //   const baseDate = expiry > today ? new Date(expiry) : new Date(today);
+
+  //   baseDate.setDate(baseDate.getDate() + Number(selectedPlan.durationDays));
+
+  //   return baseDate.toLocaleDateString("en-IN", {
+  //     day: "2-digit",
+  //     month: "short",
+  //     year: "numeric",
+  //   });
+  // };
+
   const calculateExpiry = () => {
-    if (!selectedPlan || !member) return "-";
+  if (!selectedPlan || !member) return "-";
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
-    const expiry = member.expiryDate ? new Date(member.expiryDate) : new Date();
+  const getISTDateParts = (date) => {
+    const istDate = new Date(date.getTime() + IST_OFFSET_MS);
 
-    expiry.setHours(0, 0, 0, 0);
-
-    const baseDate = expiry > today ? new Date(expiry) : new Date(today);
-
-    baseDate.setDate(baseDate.getDate() + Number(selectedPlan.durationDays));
-
-    return baseDate.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return {
+      year: istDate.getUTCFullYear(),
+      month: istDate.getUTCMonth(),
+      day: istDate.getUTCDate(),
+    };
   };
 
-  const daysLeft = useMemo(() => {
-    if (!member?.expiryDate) return 0;
+  const now = new Date();
+  const todayIST = getISTDateParts(now);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const today = new Date(
+    Date.UTC(
+      todayIST.year,
+      todayIST.month,
+      todayIST.day
+    )
+  );
 
+  let baseDate = today;
+
+  if (member.expiryDate) {
     const expiry = new Date(member.expiryDate);
-    expiry.setHours(0, 0, 0, 0);
 
-    const diff = expiry - today;
+    if (!isNaN(expiry.getTime())) {
+      const expiryIST = getISTDateParts(expiry);
 
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  }, [member]);
+      const expiryDate = new Date(
+        Date.UTC(
+          expiryIST.year,
+          expiryIST.month,
+          expiryIST.day
+        )
+      );
+
+      if (expiryDate > today) {
+        baseDate = expiryDate;
+      }
+    }
+  }
+
+  baseDate.setUTCDate(
+    baseDate.getUTCDate() + Number(selectedPlan.durationDays)
+  );
+
+  return new Date(
+    Date.UTC(
+      baseDate.getUTCFullYear(),
+      baseDate.getUTCMonth(),
+      baseDate.getUTCDate(),
+      12,
+      0,
+      0
+    )
+  ).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
+};
+
+  // const daysLeft = useMemo(() => {
+  //   if (!member?.expiryDate) return 0;
+
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
+
+  //   const expiry = new Date(member.expiryDate);
+  //   expiry.setHours(0, 0, 0, 0);
+
+  //   const diff = expiry - today;
+
+  //   return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  // }, [member]);
+
+  const daysLeft = useMemo(() => {
+  if (!member?.expiryDate) return 0;
+
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+  const getISTCalendarDate = (date) => {
+    const istDate = new Date(date.getTime() + IST_OFFSET_MS);
+
+    return Date.UTC(
+      istDate.getUTCFullYear(),
+      istDate.getUTCMonth(),
+      istDate.getUTCDate()
+    );
+  };
+
+  const today = getISTCalendarDate(new Date());
+  const expiry = getISTCalendarDate(
+    new Date(member.expiryDate)
+  );
+
+  return Math.round(
+    (expiry - today) / (1000 * 60 * 60 * 24)
+  );
+}, [member]);
 
   const planTypes = [
     ...new Set(plans.filter((p) => p.planType).map((p) => p.planType)),
@@ -514,6 +608,7 @@ Amount : ₹${amountPaid}
                       day: "2-digit",
                       month: "short",
                       year: "numeric",
+                      timeZone: "Asia/Kolkata",
                     })
                   : "-"
               }
@@ -533,6 +628,8 @@ Amount : ₹${amountPaid}
                       {
                         day: "2-digit",
                         month: "short",
+                        year: "numeric",
+                        timeZone: "Asia/Kolkata",
                       },
                     )
                   : "—"
@@ -1015,6 +1112,7 @@ Amount : ₹${amountPaid}
                                 day: "2-digit",
                                 month: "short",
                                 year: "numeric",
+                                timeZone: "Asia/Kolkata",
                               },
                             )
                           : "-"}
@@ -1028,6 +1126,7 @@ Amount : ₹${amountPaid}
                                 day: "2-digit",
                                 month: "short",
                                 year: "numeric",
+                                timeZone: "Asia/Kolkata",
                               },
                             )
                           : "-"}
@@ -1041,6 +1140,7 @@ Amount : ₹${amountPaid}
                                 day: "2-digit",
                                 month: "short",
                                 year: "numeric",
+                                timeZone: "Asia/Kolkata",
                               },
                             )
                           : "-"}

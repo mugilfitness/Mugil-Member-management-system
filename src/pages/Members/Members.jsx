@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import TablePagination from "../../components/common/TablePagination";
 import {
+  calculateISTDaysLeft,
+  formatISTDate,
+} from "../../utils/dateUtils";
+import {
   FiUsers,
   FiActivity,
   FiAlertCircle,
@@ -51,31 +55,28 @@ function Members() {
     }
   };
 
+  // 
+  
   function calculateDaysLeft(expiryDate) {
-    if (!expiryDate) return 0;
+  return calculateISTDaysLeft(expiryDate);
+}
+  // const formatDate = (date) => {
+  //   if (!date) return "-";
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  //   const d = new Date(date);
 
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0, 0, 0, 0);
-    const diff = expiry.getTime() - today.getTime();
+  //   if (isNaN(d)) return "-";
 
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  }
+  //   return d.toLocaleDateString("en-IN", {
+  //     day: "2-digit",
+  //     month: "short",
+  //     year: "numeric",
+  //   });
+  // };
+
   const formatDate = (date) => {
-    if (!date) return "-";
-
-    const d = new Date(date);
-
-    if (isNaN(d)) return "-";
-
-    return d.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
+  return formatISTDate(date);
+};
   const [currentPage, setCurrentPage] = useState(1);
 
   const membersPerPage = 10;
