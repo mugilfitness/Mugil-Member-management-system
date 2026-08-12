@@ -1705,7 +1705,7 @@ onChange={(e) => {
                             onClick={() =>
                               navigate(`/admin/payments/collect/${tx._id}`)
                             }
-                            className="px-3 py-1 bg-violet-600 text-white rounded-lg text-[10px] font-bold hover:bg-violet-700 shadow-sm"
+                            className="px-3 py-1 bg-violet-600 text-white rounded-[16px] text-[10px] font-semibold hover:bg-violet-700 shadow-sm"
                           >
                             Collect
                           </button>
@@ -1714,7 +1714,7 @@ onChange={(e) => {
                             onClick={() =>
                               navigate(`/admin/payments/history/${tx._id}`)
                             }
-                            className="px-3 py-1 bg-slate-700 text-white rounded-lg text-[10px] font-bold hover:bg-slate-800 shadow-sm"
+                            className="px-3 py-1 bg-slate-700 text-white rounded-[16px] text-[10px] font-semibold hover:bg-slate-800 shadow-sm"
                           >
                             History
                           </button>
