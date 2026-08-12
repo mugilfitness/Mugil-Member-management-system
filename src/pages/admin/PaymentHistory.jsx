@@ -539,7 +539,7 @@ function PaymentHistory() {
         </div>
       </div>
 
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-[#020617] rounded-[14pxpx] p-8 sm:p-10 text-white shadow-[0_20px_60px_-15px_rgba(30,27,75,0.8)] border border-white/10 group">
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-[#020617] rounded-[20pxpx] p-8 sm:p-10 text-white shadow-[0_20px_60px_-15px_rgba(30,27,75,0.8)] border border-white/10 group">
         {/* Premium Ambient Glow Effects */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#4d3df7]/20 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3 transition-all duration-700 group-hover:bg-[#4d3df7]/30" />
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-[14px] blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4" />
