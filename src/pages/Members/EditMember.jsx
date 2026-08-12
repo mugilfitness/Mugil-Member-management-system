@@ -159,7 +159,7 @@ const formatDate = (date) => {
 
   return (
     <div className="min-h-screen font-sans ">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6"></div>
+      {/* <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6"></div> */}
 
       <PageHeader
         title={isEditMode ? "Edit Member Details" : "Member Profile"}
@@ -317,7 +317,7 @@ navigate(-1);
         {!isEditMode ? (
           <div className="space-y-8 animate-fade-in">
             {activeTab === "personal" && (
-              <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+              <div className="bg-white rounded-[12px] shadow-xl border border-slate-100 overflow-hidden">
                 <div className="bg-gradient-to-r from-violet-50/40 to-indigo-50/40 px-6 py-4 border-b border-slate-100">
                   <div className="flex items-center gap-2">
                     <FiUser className="text-violet-500" />
