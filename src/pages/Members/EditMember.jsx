@@ -295,7 +295,7 @@ navigate(-1);
         }
       />
 
-      <div className="max-w-[1400px] mx-auto px-0 sm:px-1 lg:px-2 py-6">
+      <div className="max-w-[1400px] mx-auto py-5">
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8 border-b border-slate-200/60 pb-2">
           {tabs.map((tab) => (
