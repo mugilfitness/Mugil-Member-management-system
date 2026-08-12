@@ -73,12 +73,28 @@ function Dashboard() {
   );
 
   /* ── Helpers ── */
-  const getDaysLeft = (expiryDate) => {
-    if (!expiryDate) return 999;
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+const getDaysLeft = (expiryDate) => {
+  if (!expiryDate) return 999;
+
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+  const getISTCalendarDate = (date) => {
+    const istDate = new Date(date.getTime() + IST_OFFSET_MS);
+
+    return Date.UTC(
+      istDate.getUTCFullYear(),
+      istDate.getUTCMonth(),
+      istDate.getUTCDate()
+    );
   };
+
+  const today = getISTCalendarDate(new Date());
+  const expiry = getISTCalendarDate(new Date(expiryDate));
+
+  return Math.round(
+    (expiry - today) / (1000 * 60 * 60 * 24)
+  );
+};
 
   const branchLabel =
     currentBranch === "ALL_BRANCHES"
