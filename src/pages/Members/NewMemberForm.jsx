@@ -572,7 +572,7 @@ const totalDays = Math.round(
                   onChange={handleInputChange}
                   minLength={3}
                   maxLength={50}
-                  placeholder="ENTER FULL NAME"
+                  placeholder="Enter Your Full Name"
                   className={`w-full bg-white border rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 uppercase outline-none transition-all ${
                     errors.fullName
                       ? "border-red-400 ring-1 ring-red-100"
@@ -678,7 +678,7 @@ const totalDays = Math.round(
                   onChange={handleInputChange}
                   minLength={3}
                   maxLength={250}
-                  placeholder="ENTER COMPLETE ADDRESS"
+                  placeholder="Enter Your Address"
                   className={`w-full bg-white border rounded-xl px-3 py-2.5 text-xs font-bold uppercase text-slate-800 outline-none transition-all ${
                     errors.address
                       ? "border-red-400 ring-1 ring-red-100"
@@ -1223,7 +1223,7 @@ const totalDays = Math.round(
         <div className="xl:col-span-3 select-none">
           <div className="bg-white border border-slate-100 rounded-[14px] p-6 shadow-sm">
             <div className="border-b border-slate-100 pb-4 mb-6">
-              <h4 className="text-lg font-black text-slate-900">
+              <h4 className="text-lg font-bold text-slate-900">
                 Payment Summary
               </h4>
               <p className="text-xs text-slate-400 font-medium mt-1">

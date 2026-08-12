@@ -113,7 +113,7 @@ function Topbar({
                       : "bg-cyan-500 ring-cyan-100"
                 }`}
               />
-              <span className="hidden sm:block text-slate-700 font-black text-[11px] uppercase tracking-wider">
+              <span className="hidden sm:block text-slate-700 font-semibold text-[11px] uppercase tracking-wider">
                 {currentBranch === "ALL_BRANCHES"
                   ? "All Branches"
                   : currentBranch === "MUGIL_FITNESS"

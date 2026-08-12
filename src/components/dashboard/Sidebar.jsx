@@ -156,7 +156,7 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
                 <div className="text-left leading-none">
                   <h4 className="font-bold text-xs text-white tracking-wide group-hover:text-violet-400 transition-colors duration-200">
-                    Udhaya Suriyan
+                    UDHAYA SURIYAN
                   </h4>
                   <p className="text-slate-500 text-[8px] font-black mt-1.5 uppercase tracking-widest font-mono">
                     Super Admin

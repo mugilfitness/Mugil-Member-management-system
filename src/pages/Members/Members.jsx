@@ -212,7 +212,7 @@ function Members() {
       py-2.5
       rounded-lg
       text-xs
-      font-black
+      font-bold
       uppercase
       tracking-wider
       border
@@ -244,7 +244,7 @@ function Members() {
       py-2.5
       rounded-lg
       text-xs
-      font-black
+      font-bold
       uppercase
       tracking-wider
       bg-gradient-to-r
