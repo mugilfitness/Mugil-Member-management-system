@@ -152,7 +152,7 @@ const ExpiryRing = ({ daysLeft, totalDays }) => {
     totalDays > 0 ? Math.max(0, Math.min(1, daysLeft / totalDays)) : 0;
   const offset = circumference * (1 - ratio);
   const ringColor =
-    daysLeft <= 0
+    daysLeft < 0
       ? "var(--rose)"
       : daysLeft <= 7
         ? "var(--amber)"
@@ -344,7 +344,7 @@ Amount : ₹${amountPaid}
   //   });
   // };
 
-  const calculateExpiry = () => {
+const calculateExpiry = () => {
   if (!selectedPlan || !member) return "-";
 
   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
@@ -392,15 +392,44 @@ Amount : ₹${amountPaid}
     }
   }
 
-  baseDate.setUTCDate(
-    baseDate.getUTCDate() + Number(selectedPlan.durationDays)
+  const durationMonths = {
+    "1 Month": 1,
+    "3 Months": 3,
+    "6 Months": 6,
+    "12 Months": 12,
+  };
+
+  const monthsToAdd = durationMonths[selectedPlan.duration];
+
+  if (!monthsToAdd) return "-";
+
+  const newExpiry = new Date(baseDate);
+
+  const originalDay = newExpiry.getUTCDate();
+
+  newExpiry.setUTCDate(1);
+
+  newExpiry.setUTCMonth(
+    newExpiry.getUTCMonth() + monthsToAdd
+  );
+
+  const lastDayOfTargetMonth = new Date(
+    Date.UTC(
+      newExpiry.getUTCFullYear(),
+      newExpiry.getUTCMonth() + 1,
+      0
+    )
+  ).getUTCDate();
+
+  newExpiry.setUTCDate(
+    Math.min(originalDay, lastDayOfTargetMonth)
   );
 
   return new Date(
     Date.UTC(
-      baseDate.getUTCFullYear(),
-      baseDate.getUTCMonth(),
-      baseDate.getUTCDate(),
+      newExpiry.getUTCFullYear(),
+      newExpiry.getUTCMonth(),
+      newExpiry.getUTCDate(),
       12,
       0,
       0
