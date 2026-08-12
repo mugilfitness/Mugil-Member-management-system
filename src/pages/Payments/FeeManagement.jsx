@@ -1136,7 +1136,7 @@ px-6
 py-2.5
 rounded-lg
 text-xs
-font-black
+font-semibold
 uppercase
 tracking-wider
 border
@@ -1227,7 +1227,7 @@ hover:bg-violet-50
       py-2.5
       rounded-lg
       text-xs
-      font-black
+      font-semibold
       uppercase
       tracking-wider
       bg-gradient-to-r
@@ -1403,7 +1403,7 @@ hover:bg-violet-50
           <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col xl:flex-row items-start xl:items-center gap-4 justify-between bg-slate-50/30">
             <div className="w-full flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h3 className="text-xl font-black text-slate-900">
+                <h3 className="text-xl font-semibold text-slate-900">
                   Payment Records
                 </h3>
 
@@ -1427,7 +1427,7 @@ hover:bg-violet-50
 
               <div className="flex gap-2">
                 <div className="px-4 py-2 rounded-xl bg-violet-50 border border-violet-100">
-                  <span className="text-violet-700 font-black">
+                  <span className="text-violet-700 font-semibold">
                     {filteredTx.length}
                   </span>
 
@@ -1554,7 +1554,7 @@ onChange={(e) => {
             </button>
 
             <div className="ml-auto bg-slate-900 text-white px-5 py-3 rounded-2xl">
-              <span className="text-xs font-black uppercase">
+              <span className="text-xs font-semibold uppercase">
                 {filteredTx.length} Results
               </span>
             </div>
@@ -1614,7 +1614,7 @@ onChange={(e) => {
                             {tx.name ? tx.name.charAt(0).toUpperCase() : "M"}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-slate-900 group-hover:text-[#4d3df7] transition-colors">
+                            <p className="text-sm font-semibold text-slate-900 group-hover:text-[#4d3df7] transition-colors">
                               {tx.name}
                             </p>
                             <div className="flex items-center gap-2 mt-0.5">
@@ -1640,7 +1640,7 @@ onChange={(e) => {
                       </td>
 
                       <td className="px-6 py-4">
-                        <p className="text-xs font-black text-slate-800">
+                        <p className="text-xs font-semibold text-slate-800">
                           {tx.plan}
                         </p>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
@@ -1649,7 +1649,7 @@ onChange={(e) => {
                       </td>
 
                       <td className="px-6 py-4">
-                        <div className="text-sm font-black text-slate-900 font-mono bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                        <div className="text-sm font-semibold text-slate-900 font-mono bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
                           <p className="font-black">
                             ₹
                             {Number(tx.totalAmount || 0).toLocaleString(
