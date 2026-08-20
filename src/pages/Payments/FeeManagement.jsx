@@ -749,7 +749,7 @@ const overdueDifference =
     (member) => member.paymentStatus === "Balance Pending",
   ).length;
 
-  const generateReportPDF = (members, reportTitle, fileName, expiredCount) => {
+  const generateReportPDF = (members, reportTitle, fileName, expiredCount , pendingMembers = members) => {
     const doc = new jsPDF();
 
     const totalMembers = members.length;
@@ -764,10 +764,10 @@ const overdueDifference =
       0,
     );
 
-    const totalBalance = members.reduce(
-      (sum, m) => sum + Number(m.balanceAmount || 0),
-      0,
-    );
+   const totalBalance = pendingMembers.reduce(
+  (sum, m) => sum + Number(m.balanceAmount || 0),
+  0,
+);
 
     const fullyPaid = members.filter(
       (m) => m.paymentStatus === "Fully Paid",
@@ -1036,7 +1036,8 @@ const export60DaysPDF = () => {
     filtered,
     "Last 60 Days Report",
     "60-Days-Report.pdf",
-    expiredCount
+    expiredCount,
+     transactions
   );
 };
 
