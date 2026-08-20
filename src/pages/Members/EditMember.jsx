@@ -437,7 +437,7 @@ navigate(-1);
                     value={formData.paymentMethod}
                   />
 
-                  <DetailItem label="Due Date" value={formData.dueDate} />
+                  <DetailItem label="Due Date" value={formatDate(formData.dueDate)} />
 
                   <DetailItem
                     label="Payment Note"
