@@ -209,6 +209,7 @@ const RenewMember = () => {
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(false);
   const [planType, setPlanType] = useState("");
+  const [renewalDate, setRenewalDate] = useState("");
 
   const fetchMember = async () => {
     try {
@@ -232,6 +233,23 @@ const RenewMember = () => {
     fetchMember();
     fetchPlans();
   }, [id]);
+
+  useEffect(() => {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  const parts = formatter.formatToParts(new Date());
+
+  const year = parts.find((p) => p.type === "year")?.value;
+  const month = parts.find((p) => p.type === "month")?.value;
+  const day = parts.find((p) => p.type === "day")?.value;
+
+  setRenewalDate(`${year}-${month}-${day}`);
+}, []);
 
   const handleRenew = async () => {
     if (!member?._id) {
@@ -302,6 +320,7 @@ Amount : ₹${amountPaid}
         amountPaid,
         paymentMethod,
         remarks,
+        renewalDate,
       });
 
       Swal.close();
@@ -344,53 +363,110 @@ Amount : ₹${amountPaid}
   //   });
   // };
 
+// const calculateExpiry = () => {
+//   if (!selectedPlan || !member) return "-";
+
+//   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+//   const getISTDateParts = (date) => {
+//     const istDate = new Date(date.getTime() + IST_OFFSET_MS);
+
+//     return {
+//       year: istDate.getUTCFullYear(),
+//       month: istDate.getUTCMonth(),
+//       day: istDate.getUTCDate(),
+//     };
+//   };
+
+//   const now = new Date();
+//   const todayIST = getISTDateParts(now);
+
+//   const today = new Date(
+//     Date.UTC(
+//       todayIST.year,
+//       todayIST.month,
+//       todayIST.day
+//     )
+//   );
+
+//   let baseDate = today;
+
+//   if (member.expiryDate) {
+//     const expiry = new Date(member.expiryDate);
+
+//     if (!isNaN(expiry.getTime())) {
+//       const expiryIST = getISTDateParts(expiry);
+
+//       const expiryDate = new Date(
+//         Date.UTC(
+//           expiryIST.year,
+//           expiryIST.month,
+//           expiryIST.day
+//         )
+//       );
+
+//       if (expiryDate > today) {
+//         baseDate = expiryDate;
+//       }
+//     }
+//   }
+
+//   const durationMonths = {
+//     "1 Month": 1,
+//     "3 Months": 3,
+//     "6 Months": 6,
+//     "12 Months": 12,
+//   };
+
+//   const monthsToAdd = durationMonths[selectedPlan.duration];
+
+//   if (!monthsToAdd) return "-";
+
+//   const newExpiry = new Date(baseDate);
+
+//   const originalDay = newExpiry.getUTCDate();
+
+//   newExpiry.setUTCDate(1);
+
+//   newExpiry.setUTCMonth(
+//     newExpiry.getUTCMonth() + monthsToAdd
+//   );
+
+//   const lastDayOfTargetMonth = new Date(
+//     Date.UTC(
+//       newExpiry.getUTCFullYear(),
+//       newExpiry.getUTCMonth() + 1,
+//       0
+//     )
+//   ).getUTCDate();
+
+//   newExpiry.setUTCDate(
+//     Math.min(originalDay, lastDayOfTargetMonth)
+//   );
+
+//   return new Date(
+//     Date.UTC(
+//       newExpiry.getUTCFullYear(),
+//       newExpiry.getUTCMonth(),
+//       newExpiry.getUTCDate(),
+//       12,
+//       0,
+//       0
+//     )
+//   ).toLocaleDateString("en-IN", {
+//     day: "2-digit",
+//     month: "short",
+//     year: "numeric",
+//     timeZone: "Asia/Kolkata",
+//   });
+// };
+
 const calculateExpiry = () => {
-  if (!selectedPlan || !member) return "-";
+  if (!selectedPlan || !renewalDate) return "-";
 
-  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+  const [year, month, day] = renewalDate.split("-").map(Number);
 
-  const getISTDateParts = (date) => {
-    const istDate = new Date(date.getTime() + IST_OFFSET_MS);
-
-    return {
-      year: istDate.getUTCFullYear(),
-      month: istDate.getUTCMonth(),
-      day: istDate.getUTCDate(),
-    };
-  };
-
-  const now = new Date();
-  const todayIST = getISTDateParts(now);
-
-  const today = new Date(
-    Date.UTC(
-      todayIST.year,
-      todayIST.month,
-      todayIST.day
-    )
-  );
-
-  let baseDate = today;
-
-  if (member.expiryDate) {
-    const expiry = new Date(member.expiryDate);
-
-    if (!isNaN(expiry.getTime())) {
-      const expiryIST = getISTDateParts(expiry);
-
-      const expiryDate = new Date(
-        Date.UTC(
-          expiryIST.year,
-          expiryIST.month,
-          expiryIST.day
-        )
-      );
-
-      if (expiryDate > today) {
-        baseDate = expiryDate;
-      }
-    }
-  }
+  if (!year || !month || !day) return "-";
 
   const durationMonths = {
     "1 Month": 1,
@@ -403,38 +479,31 @@ const calculateExpiry = () => {
 
   if (!monthsToAdd) return "-";
 
-  const newExpiry = new Date(baseDate);
+  const startDate = new Date(
+    Date.UTC(year, month - 1, day)
+  );
 
-  const originalDay = newExpiry.getUTCDate();
+  const originalDay = startDate.getUTCDate();
 
-  newExpiry.setUTCDate(1);
+  startDate.setUTCDate(1);
 
-  newExpiry.setUTCMonth(
-    newExpiry.getUTCMonth() + monthsToAdd
+  startDate.setUTCMonth(
+    startDate.getUTCMonth() + monthsToAdd
   );
 
   const lastDayOfTargetMonth = new Date(
     Date.UTC(
-      newExpiry.getUTCFullYear(),
-      newExpiry.getUTCMonth() + 1,
+      startDate.getUTCFullYear(),
+      startDate.getUTCMonth() + 1,
       0
     )
   ).getUTCDate();
 
-  newExpiry.setUTCDate(
+  startDate.setUTCDate(
     Math.min(originalDay, lastDayOfTargetMonth)
   );
 
-  return new Date(
-    Date.UTC(
-      newExpiry.getUTCFullYear(),
-      newExpiry.getUTCMonth(),
-      newExpiry.getUTCDate(),
-      12,
-      0,
-      0
-    )
-  ).toLocaleDateString("en-IN", {
+  return startDate.toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -575,6 +644,7 @@ const StatusIcon = status.icon;
               disabled={
                 !selectedPlan ||
                 !paymentMethod ||
+                !renewalDate ||
                 amountPaid === "" ||
                 Number(amountPaid) <= 0 ||
                 Number(amountPaid) > selectedPlan?.finalPrice ||
@@ -823,6 +893,29 @@ const StatusIcon = status.icon;
           className="rounded-2xl bg-white border border-[var(--line)] p-7 rh-rise relative overflow-hidden"
           style={{ animationDelay: "100ms" }}
         >
+        <div className="mt-6">
+  <label className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-faint)] mb-2">
+    Renewal Date
+  </label>
+
+  <div className="flex items-center gap-3 rounded-xl border-2 border-[var(--line)] bg-white px-4 py-3 focus-within:border-[var(--violet)] transition-colors">
+    <FiCalendar
+      size={16}
+      className="text-[var(--violet)] shrink-0"
+    />
+
+    <input
+      type="date"
+      value={renewalDate}
+      onChange={(e) => setRenewalDate(e.target.value)}
+      className="w-full bg-transparent outline-none text-sm font-semibold text-[var(--text)]"
+    />
+  </div>
+
+  <p className="text-[10px] text-[var(--text-faint)] mt-2">
+    Expiry will be calculated from this renewal date.
+  </p>
+</div>
           <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[var(--violet)] to-[var(--cyan)]" />
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--text-faint)] mb-5 pl-2">
             Renewal Summary
@@ -1037,6 +1130,7 @@ const StatusIcon = status.icon;
             disabled={
               !selectedPlan ||
               !paymentMethod ||
+              !renewalDate ||
               amountPaid === "" ||
               Number(amountPaid) <= 0 ||
               Number(amountPaid) > selectedPlan?.finalPrice ||

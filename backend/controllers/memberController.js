@@ -662,39 +662,66 @@ const istToday = new Date(
 //       );
 
 
+// const oldExpiryDate =
+//   member.expiryDate || null;
+
+// const expiryTime =
+//   member.expiryDate
+//     ? new Date(member.expiryDate).getTime()
+//     : 0;
+
+// let baseDate;
+
+// if (expiryTime > now.getTime()) {
+//   const expiry = new Date(member.expiryDate);
+
+//   const expiryIST = new Date(
+//     expiry.getTime() + IST_OFFSET_MS
+//   );
+
+//   baseDate = new Date(
+//     Date.UTC(
+//       expiryIST.getUTCFullYear(),
+//       expiryIST.getUTCMonth(),
+//       expiryIST.getUTCDate(),
+//       0,
+//       0,
+//       0,
+//       0
+//     ) - IST_OFFSET_MS
+//   );
+// } else {
+//   baseDate = new Date(
+//     istToday.getTime() - IST_OFFSET_MS
+//   );
+// }
+
 const oldExpiryDate =
   member.expiryDate || null;
 
-const expiryTime =
-  member.expiryDate
-    ? new Date(member.expiryDate).getTime()
-    : 0;
+const { renewalDate } = req.body;
 
-let baseDate;
-
-if (expiryTime > now.getTime()) {
-  const expiry = new Date(member.expiryDate);
-
-  const expiryIST = new Date(
-    expiry.getTime() + IST_OFFSET_MS
-  );
-
-  baseDate = new Date(
-    Date.UTC(
-      expiryIST.getUTCFullYear(),
-      expiryIST.getUTCMonth(),
-      expiryIST.getUTCDate(),
-      0,
-      0,
-      0,
-      0
-    ) - IST_OFFSET_MS
-  );
-} else {
-  baseDate = new Date(
-    istToday.getTime() - IST_OFFSET_MS
-  );
+if (!renewalDate) {
+  return res.status(400).json({
+    success: false,
+    message: "Renewal date is required",
+  });
 }
+
+const [year, month, day] =
+  renewalDate.split("-").map(Number);
+
+const baseDate = new Date(
+  Date.UTC(
+    year,
+    month - 1,
+    day,
+    0,
+    0,
+    0,
+    0
+  ) - IST_OFFSET_MS
+);
 
 // const newExpiry = new Date(baseDate);
 
