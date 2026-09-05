@@ -33,17 +33,23 @@ const generateMemberId = async (branch) => {
 const createMember = async (req, res) => {
   try {
 
-        const existingMember = await Member.findOne({
-      mobile: req.body.mobile,
-    });
+ const existingMembers = await Member.find({
+  mobile: req.body.mobile,
+});
 
-    if (existingMember) {
-      return res.status(400).json({
-        success: false,
-        message: `Mobile number already registered with Member ID ${existingMember.memberId} (${existingMember.fullName}).`,
-      });
-    }
-    const initialAmountPaid =
+if (existingMembers.length > 0) {
+  const memberDetails = existingMembers
+    .map(
+      (member) =>
+        `${member.memberId} (${member.fullName})`
+    )
+    .join(", ");
+
+  return res.status(400).json({
+    success: false,
+    message: `Mobile number already registered with ${memberDetails}.`,
+  });
+}   const initialAmountPaid =
       Number(req.body.amountPaid || 0);
 
     const totalAmount =
