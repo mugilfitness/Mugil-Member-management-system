@@ -33,6 +33,16 @@ const generateMemberId = async (branch) => {
 const createMember = async (req, res) => {
   try {
 
+        const existingMember = await Member.findOne({
+      mobile: req.body.mobile,
+    });
+
+    if (existingMember) {
+      return res.status(400).json({
+        success: false,
+        message: `Mobile number already registered with Member ID ${existingMember.memberId} (${existingMember.fullName}).`,
+      });
+    }
     const initialAmountPaid =
       Number(req.body.amountPaid || 0);
 
