@@ -25,6 +25,7 @@ import {
   FiUsers,
   FiX,
   FiEdit3,
+  FiRefreshCw,
 } from "react-icons/fi";
 
 function EditMember() {
@@ -130,6 +131,74 @@ if (!confirmed) return;
     { id: "membership", label: "Membership & Payment", icon: FiCreditCard },
     { id: "fitness", label: "Fitness Metrics", icon: FiActivity },
   ];
+
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+const calculateDaysLeft = (expiryDate) => {
+  if (!expiryDate) return null;
+
+  const now = new Date();
+
+  const istNow = new Date(
+    now.getTime() + IST_OFFSET_MS
+  );
+
+  const todayIST = Date.UTC(
+    istNow.getUTCFullYear(),
+    istNow.getUTCMonth(),
+    istNow.getUTCDate()
+  );
+
+  const expiry = new Date(expiryDate);
+
+  const expiryIST = new Date(
+    expiry.getTime() + IST_OFFSET_MS
+  );
+
+  const expiryISTDate = Date.UTC(
+    expiryIST.getUTCFullYear(),
+    expiryIST.getUTCMonth(),
+    expiryIST.getUTCDate()
+  );
+
+  return Math.ceil(
+    (expiryISTDate - todayIST) /
+      (1000 * 60 * 60 * 24)
+  );
+};
+
+const getMemberStatus = (expiryDate) => {
+  const daysLeft = calculateDaysLeft(expiryDate);
+
+  if (daysLeft === null) return "Inactive";
+
+  if (daysLeft < -180) return "Inactive";
+
+  if (daysLeft < 0) return "Expired";
+
+  return "Active";
+};
+
+
+const getDaysLeftText = (expiryDate) => {
+  const daysLeft = calculateDaysLeft(expiryDate);
+
+  if (daysLeft === null) return "No expiry date";
+
+  if (daysLeft < -180) {
+    return `Inactive • ${Math.abs(daysLeft)} days ago`;
+  }
+
+  if (daysLeft < 0) {
+    return `Expired • ${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? "" : "s"} ago`;
+  }
+
+  if (daysLeft === 0) {
+    return "Expires today";
+  }
+
+  return `${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
+};
 
 const formatDate = (date) => {
   if (!date) return "";
@@ -404,8 +473,26 @@ navigate(-1);
                     label="Membership Days"
                     value={formData.totalDays}
                   />
+                  <DetailItem
+  label="Last Renewal Date"
+  value={formatDate(formData.lastRenewalDate)}
+  icon={FiRefreshCw}
+/>
 
-                  <DetailItem label="Member Status" value={formData.status} />
+<DetailItem
+  label="Renewal Count"
+  value={formData.renewalCount ?? 0}
+  icon={FiRefreshCw}
+/>
+
+                  <DetailItem
+  label="Member Status"
+  value={getMemberStatus(formData.expiryDate)}
+/>
+<DetailItem
+  label="Membership Remaining"
+  value={getDaysLeftText(formData.expiryDate)}
+/>
 
                   <DetailItem
                     label="Membership Fee"
