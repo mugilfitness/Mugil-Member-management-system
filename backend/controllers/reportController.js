@@ -352,8 +352,8 @@ const diffDays = (expiryDate - today) / 86400000;
   })
       .sort(
         (a, b) =>
-          new Date(b.expiryDate) -
-          new Date(a.expiryDate)
+          new Date(a.expiryDate) -
+          new Date(b.expiryDate)
       )
       .map((member) => ({
         memberId: member.memberId,
