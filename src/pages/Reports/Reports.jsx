@@ -230,6 +230,35 @@ const formatMetricValue = (format, value) => {
   return value || 0;
 };
 
+const getISTDayNumber = (date) => {
+  if (!date) return null;
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(parsed);
+
+  const year = Number(parts.find((p) => p.type === "year").value);
+  const month = Number(parts.find((p) => p.type === "month").value);
+  const day = Number(parts.find((p) => p.type === "day").value);
+
+  return Date.UTC(year, month - 1, day) / 86400000;
+};
+
+const getExpiryDayDiff = (expiryDate) => {
+  const expiryDay = getISTDayNumber(expiryDate);
+  const today = getISTDayNumber(new Date());
+
+  if (expiryDay === null || today === null) return null;
+
+  return expiryDay - today;
+};
+
 // ─── Custom Chart Tooltip ─────────────────────────────────────────────────────
 
 const ChartTooltip = ({ active, payload, label, prefix = "" }) => {
@@ -303,14 +332,11 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
   // ── ALL MEMBERS ────────────────────────────────────────────────────────────
   if (reportType === "all-members") {
     const totalMembers = rows.length;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+const activeMembers = rows.filter((member) => {
+  const daysLeft = getExpiryDayDiff(member.expiryDate);
 
-    const activeMembers = rows.filter((member) => {
-      if (!member.expiryDate) return false;
-
-      return new Date(member.expiryDate) >= today;
-    }).length;
+  return daysLeft !== null && daysLeft > 7;
+}).length;
     const totalPaid = rows.reduce((s, m) => s + Number(m.amountPaid || 0), 0);
     const totalPending = rows.reduce(
       (s, m) => s + Number(m.balanceAmount || 0),
@@ -448,28 +474,21 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
 
   // ── EXPIRING MEMBERS ───────────────────────────────────────────────────────
   if (reportType === "expiring-members") {
-    const totalExpiring = rows.length;
+   const totalExpiring = rows.length;
 
-    // expiring today
-    const expiringToday = rows.filter((m) => {
-      if (!m.expiryDate) return false;
-      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
-      return diff === 0;
-    }).length;
+const expiringToday = rows.filter(
+  (m) => getExpiryDayDiff(m.expiryDate) === 0
+).length;
 
-    // expiring in 1-3 days
-    const expiring3Days = rows.filter((m) => {
-      if (!m.expiryDate) return false;
-      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
-      return diff >= 1 && diff <= 3;
-    }).length;
+const expiring3Days = rows.filter((m) => {
+  const diff = getExpiryDayDiff(m.expiryDate);
+  return diff !== null && diff >= 1 && diff <= 3;
+}).length;
 
-    // expiring in 4-7 days
-    const expiring7Days = rows.filter((m) => {
-      if (!m.expiryDate) return false;
-      const diff = Math.ceil((new Date(m.expiryDate) - today) / 86_400_000);
-      return diff >= 4 && diff <= 7;
-    }).length;
+const expiring7Days = rows.filter((m) => {
+  const diff = getExpiryDayDiff(m.expiryDate);
+  return diff !== null && diff >= 4 && diff <= 7;
+}).length;
 
     return [
       {
@@ -507,72 +526,43 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
     ];
   }
 
-  if (reportType === "expired-members") {
-
+ if (reportType === "expired-members") {
   const totalExpired = rows.length;
 
-  const expiredToday = rows.filter((m) => {
-    if (!m.expiryDate) return false;
-
-    const diff = Math.ceil(
-      (today - new Date(m.expiryDate)) / 86400000
-    );
-
-    return diff === 0;
-  }).length;
-
   const expiredWeek = rows.filter((m) => {
-    if (!m.expiryDate) return false;
-
-    const diff = Math.ceil(
-      (today - new Date(m.expiryDate)) / 86400000
-    );
-
-    return diff >= 1 && diff <= 7;
+    const diff = getExpiryDayDiff(m.expiryDate);
+    return diff !== null && diff >= -7 && diff <= -1;
   }).length;
 
   const expiredOlder = rows.filter((m) => {
-    if (!m.expiryDate) return false;
-
-    const diff = Math.ceil(
-      (today - new Date(m.expiryDate)) / 86400000
-    );
-
-    return diff >= 8 && diff <= 60;
+    const diff = getExpiryDayDiff(m.expiryDate);
+    return diff !== null && diff >= -60 && diff <= -8;
   }).length;
 
   return [
     {
       label: "Total Expired Members",
       value: `${totalExpired}`,
-      bgColor: [230,241,251],
-      border: [133,183,235],
-      label_c: [24,95,165],
-      value_c: [12,68,124],
-    },
-    {
-      label: "Expired Today",
-      value: `${expiredToday}`,
-      bgColor: [252,235,235],
-      border: [240,149,149],
-      label_c: [163,45,45],
-      value_c: [121,31,31],
+      bgColor: [230, 241, 251],
+      border: [133, 183, 235],
+      label_c: [24, 95, 165],
+      value_c: [12, 68, 124],
     },
     {
       label: "Expired (1–7 Days)",
       value: `${expiredWeek}`,
-      bgColor: [250,238,218],
-      border: [239,159,39],
-      label_c: [133,79,11],
-      value_c: [99,56,6],
+      bgColor: [250, 238, 218],
+      border: [239, 159, 39],
+      label_c: [133, 79, 11],
+      value_c: [99, 56, 6],
     },
     {
       label: "Expired (8–60 Days)",
       value: `${expiredOlder}`,
-      bgColor: [234,243,222],
-      border: [151,196,89],
-      label_c: [59,109,17],
-      value_c: [39,80,10],
+      bgColor: [234, 243, 222],
+      border: [151, 196, 89],
+      label_c: [59, 109, 17],
+      value_c: [39, 80, 10],
     },
   ];
 }
@@ -692,9 +682,10 @@ if (reportType === "inactive-members") {
     (s, m) => s + Number(m.balanceAmount || m.pendingAmount || 0),
     0,
   );
-  const expiredCount = rows.filter(
-    (m) => m.expiryDate && new Date(m.expiryDate) < today,
-  ).length;
+const expiredCount = rows.filter((m) => {
+  const diff = getExpiryDayDiff(m.expiryDate);
+  return diff !== null && diff < 0 && diff >= -60;
+}).length;
 
   return [
     {
@@ -1328,7 +1319,7 @@ useEffect(() => {
                 <div className="flex items-center gap-4 text-[11px] font-semibold text-slate-400 mt-3">
                   <span className="flex items-center gap-2 text-slate-600">
                     <span className="w-3 h-2.5 bg-[#6366f1] rounded-sm" />{" "}
-                    Active
+                  Total Members
                   </span>
                   <span className="flex items-center gap-2 text-slate-600">
                     <span className="w-3 h-1 bg-emerald-500 rounded-full" /> New

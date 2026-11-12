@@ -1,3 +1,4 @@
+
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
 const getISTNow = () => {
@@ -28,6 +29,33 @@ const getISTDayEnd = (date) => {
     return new Date(
         Date.UTC(year, month, day, 23, 59, 59, 999) - IST_OFFSET_MS
     );
+};
+
+// Get IST calendar day number
+const getISTDayNumber = (date) => {
+    if (!date) return null;
+
+    const value = new Date(date);
+
+    if (isNaN(value.getTime())) {
+        return null;
+    }
+
+    const { year, month, date: day } = getISTDateParts(value);
+
+    return Date.UTC(year, month, day) / (24 * 60 * 60 * 1000);
+};
+
+// Calculate date difference using IST calendar days
+const getISTDayDiff = (expiryDate) => {
+    const expiryDay = getISTDayNumber(expiryDate);
+    const today = getISTDayNumber(new Date());
+
+    if (expiryDay === null || today === null) {
+        return null;
+    }
+
+    return expiryDay - today;
 };
 
 const isDateInPeriod = (date, period = "overall") => {
@@ -79,5 +107,6 @@ const isDateInPeriod = (date, period = "overall") => {
 };
 
 module.exports = {
-    isDateInPeriod
+    isDateInPeriod,
+    getISTDayDiff
 };

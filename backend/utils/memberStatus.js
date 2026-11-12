@@ -1,32 +1,34 @@
+
+const { getISTDayDiff } = require("./dateFilter");
+
 function getMemberStatus(expiryDate) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    if (!expiryDate) {
+        return "Expired";
+    }
 
-  if (!expiryDate) {
-    return "Expired";
-  }
+    const diffDays = getISTDayDiff(expiryDate);
 
-  const expiry = new Date(expiryDate);
+    if (diffDays === null) {
+        return "Expired";
+    }
 
-  if (isNaN(expiry.getTime())) {
-    return "Expired";
-  }
+    // More than 60 days expired
+    if (diffDays < -60) {
+        return "Inactive";
+    }
 
-  expiry.setHours(0, 0, 0, 0);
+    // Expired from yesterday up to 60 days
+    if (diffDays < 0) {
+        return "Expired";
+    }
 
-  const diffDays = Math.ceil(
-    (expiry - today) / (1000 * 60 * 60 * 24)
-  );
+    // Expiring today or within the next 7 days
+    if (diffDays <= 7) {
+        return "Expiring Soon";
+    }
 
-  if (diffDays < 0) {
-    return "Expired";
-  }
-
-  if (diffDays <= 7) {
-    return "Expiring Soon";
-  }
-
-  return "Active";
+    // More than 7 days remaining
+    return "Active";
 }
 
 module.exports = getMemberStatus;

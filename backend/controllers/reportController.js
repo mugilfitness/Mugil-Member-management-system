@@ -1,7 +1,7 @@
 const Member = require("../models/Member");
 const Branch = require("../models/Branch");
 const getMemberStatus = require("../utils/memberStatus");
-const { isDateInPeriod } = require("../utils/dateFilter");
+const { isDateInPeriod, getISTDayDiff } = require("../utils/dateFilter");
 
 const { calculateFinance } = require("../utils/financeSummary");
 
@@ -95,7 +95,9 @@ const getDashboardMetrics = async (req, res) => {
     const members = await Member.find(memberFilter).lean();
 
     const activeMemberList = members.filter(
-      member => getMemberStatus(member.expiryDate) !== "Expired"
+      member =>
+    getMemberStatus(member.expiryDate) !== "Expired" &&
+    getMemberStatus(member.expiryDate) !== "Inactive"
     );
 
     const activeMembers = activeMemberList.length;
@@ -130,8 +132,7 @@ const expiringMembers = members.filter((member) => {
 
 
 
-    const todayCollection =
-      finance.collection;
+const todayCollection = calculateFinance(members, "today").collection;
 
 
     
@@ -340,10 +341,11 @@ const members = (await Member.find(filter).lean())
   .filter((member) => {
     if (!member.expiryDate) return false;
 
-    const expiryDate = getISTDateOnly(member.expiryDate);
+const expiryDate = getISTDateOnly(member.expiryDate);
 
-    const diffDays =
-      (expiryDate - today) / 86400000;
+if (!expiryDate) return false;
+
+const diffDays = (expiryDate - today) / 86400000;
 
     return diffDays >= 0 && diffDays <= 7;
   })
@@ -413,12 +415,13 @@ const members = (await Member.find(filter).lean())
   .filter((member) => {
     if (!member.expiryDate) return false;
 
-    const expiryDate = getISTDateOnly(member.expiryDate);
+const expiryDate = getISTDateOnly(member.expiryDate);
 
-    const diffDays =
-      (expiryDate - today) / 86400000;
+if (!expiryDate) return false;
 
-    return diffDays <= 0 && diffDays >= -60;
+const diffDays = (expiryDate - today) / 86400000;
+
+    return diffDays < 0 && diffDays >= -60;
   })
       .sort(
         (a, b) =>
@@ -465,9 +468,11 @@ const getInactiveMembersReport = async (req, res) => {
       .filter((member) => {
         if (!member.expiryDate) return false;
 
-        const expiryDate = getISTDateOnly(member.expiryDate);
+ const expiryDate = getISTDateOnly(member.expiryDate);
 
-        const diffDays = (expiryDate - today) / 86400000;
+if (!expiryDate) return false;
+
+const diffDays = (expiryDate - today) / 86400000;
 
         return diffDays < -60;
       })
@@ -734,7 +739,9 @@ const getBranchRevenueReport = async (req, res) => {
         }).lean();
 
         const activeMembers = members.filter(
-          member => getMemberStatus(member.expiryDate) !== "Expired"
+          member =>
+    getMemberStatus(member.expiryDate) !== "Expired" &&
+    getMemberStatus(member.expiryDate) !== "Inactive"
         );
 
         const finance = calculateFinance(
@@ -831,7 +838,9 @@ const getActiveBranchesReport = async (req, res) => {
         }).lean();
 
         const activeMembers = allMembers.filter(
-          member => getMemberStatus(member.expiryDate) !== "Expired"
+          member =>
+    getMemberStatus(member.expiryDate) !== "Expired" &&
+    getMemberStatus(member.expiryDate) !== "Inactive"
         );
 
 

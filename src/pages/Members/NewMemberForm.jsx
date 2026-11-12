@@ -29,8 +29,38 @@ const getISTToday = () => {
   ).padStart(2, "0")}-${String(istNow.getUTCDate()).padStart(2, "0")}`;
 };
 
+// const addMonthsSafe = (dateString, months) => {
+//   const [year, month, day] = dateString.split("-").map(Number);
+
+//   const targetMonthIndex = month - 1 + months;
+
+//   const targetYear =
+//     year + Math.floor(targetMonthIndex / 12);
+
+//   const targetMonth =
+//     targetMonthIndex % 12;
+
+//   const lastDayOfTargetMonth = new Date(
+//     Date.UTC(targetYear, targetMonth + 1, 0)
+//   ).getUTCDate();
+
+//   const safeDay = Math.min(day, lastDayOfTargetMonth);
+
+//   return `${targetYear}-${String(targetMonth + 1).padStart(2, "0")}-${String(
+//     safeDay
+//   ).padStart(2, "0")}`;
+// };
+
 const addMonthsSafe = (dateString, months) => {
+  if (!dateString || !Number.isInteger(months) || months < 0) {
+    return "";
+  }
+
   const [year, month, day] = dateString.split("-").map(Number);
+
+  if (!year || !month || !day || month > 12 || day > 31) {
+    return "";
+  }
 
   const targetMonthIndex = month - 1 + months;
 
@@ -50,7 +80,6 @@ const addMonthsSafe = (dateString, months) => {
     safeDay
   ).padStart(2, "0")}`;
 };
-
 function NewMemberForm({ onBack }) {
   const [errors, setErrors] = useState({});
   const [membershipPlans, setMembershipPlans] = useState([]);

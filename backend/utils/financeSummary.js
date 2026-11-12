@@ -14,9 +14,9 @@ const calculateFinance = (members, period = "overall") => {
 
         const status = getMemberStatus(member.expiryDate);
 
-        if (status !== "Expired") {
-            activeMembers++;
-        }
+  if (status === "Active" || status === "Expiring Soon") {
+    activeMembers++;
+}
 
 
        

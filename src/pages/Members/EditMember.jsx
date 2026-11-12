@@ -168,15 +168,17 @@ const calculateDaysLeft = (expiryDate) => {
 };
 
 const getMemberStatus = (expiryDate) => {
-  const daysLeft = calculateDaysLeft(expiryDate);
+    const daysLeft = calculateDaysLeft(expiryDate);
 
-  if (daysLeft === null) return "Inactive";
+    if (daysLeft === null) return "Expired";
 
-  if (daysLeft < -60) return "Inactive";
+    if (daysLeft < -60) return "Inactive";
 
-  if (daysLeft < 0) return "Expired";
+    if (daysLeft < 0) return "Expired";
 
-  return "Active";
+    if (daysLeft <= 7) return "Expiring Soon";
+
+    return "Active";
 };
 
 

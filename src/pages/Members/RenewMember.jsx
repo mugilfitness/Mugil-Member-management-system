@@ -108,6 +108,12 @@ const STATUS_STYLES = {
     dot: "bg-[var(--rose)]",
     icon: FiCalendar,
   },
+    Inactive: {
+    bg: "bg-slate-100",
+    text: "text-slate-500",
+    dot: "bg-slate-500",
+    icon: FiLock,
+  },
 };
 const STATUS_FALLBACK = {
   bg: "bg-white/10",
@@ -525,8 +531,8 @@ const calculateExpiry = () => {
   //   return Math.ceil(diff / (1000 * 60 * 60 * 24));
   // }, [member]);
 
-  const daysLeft = useMemo(() => {
-  if (!member?.expiryDate) return 0;
+const daysLeft = useMemo(() => {
+  if (!member?.expiryDate) return null;
 
   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
@@ -540,10 +546,12 @@ const calculateExpiry = () => {
     );
   };
 
+  const expiryDate = new Date(member.expiryDate);
+
+  if (isNaN(expiryDate.getTime())) return null;
+
   const today = getISTCalendarDate(new Date());
-  const expiry = getISTCalendarDate(
-    new Date(member.expiryDate)
-  );
+  const expiry = getISTCalendarDate(expiryDate);
 
   return Math.round(
     (expiry - today) / (1000 * 60 * 60 * 24)
@@ -598,11 +606,15 @@ const calculateExpiry = () => {
   }
 
 const displayStatus =
-  daysLeft < 0
+  daysLeft === null
     ? "Expired"
-    : daysLeft <= 7
-      ? "Expiring Soon"
-      : "Active";
+    : daysLeft < -60
+      ? "Inactive"
+      : daysLeft < 0
+        ? "Expired"
+        : daysLeft <= 7
+          ? "Expiring Soon"
+          : "Active";
 
 const status = STATUS_STYLES[displayStatus] || STATUS_FALLBACK;
 const StatusIcon = status.icon;

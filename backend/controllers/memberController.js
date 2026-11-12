@@ -1,6 +1,7 @@
 const Member = require("../models/Member");
 const Plan = require("../models/Plan");
 const Counter = require("../models/Counter");
+const { getISTDayDiff } = require("../utils/dateFilter");
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
 
@@ -73,17 +74,24 @@ req.body.memberId = memberId;
     const member =
       await Member.create(req.body);
 
-    if (req.body.selectedPlanId) {
-      await Plan.findByIdAndUpdate(
+if (req.body.selectedPlanId) {
+    const expiryDiffDays = member.expiryDate
+        ? getISTDayDiff(member.expiryDate)
+        : null;
+
+    const isActive =
+        expiryDiffDays !== null && expiryDiffDays >= 0;
+
+    await Plan.findByIdAndUpdate(
         req.body.selectedPlanId,
         {
-          $inc: {
-            memberCount: 1,
-            activeMembers: 1,
-          },
+            $inc: {
+                memberCount: 1,
+                activeMembers: isActive ? 1 : 0,
+            },
         }
-      );
-    }
+    );
+}
 
     if (initialAmountPaid > 0) {
 
@@ -276,13 +284,20 @@ if (
   newPlanId &&
   oldPlanId.toString() !== newPlanId.toString()
 ) {
-  const now = new Date();
+//   const now = new Date();
 
-  // Member is considered active only when
-const wasActive = Boolean(
-  existingMember.expiryDate &&
-  new Date(existingMember.expiryDate).getTime() > now.getTime()
-);
+//   // Member is considered active only when
+// const wasActive = Boolean(
+//   existingMember.expiryDate &&
+//   new Date(existingMember.expiryDate).getTime() > now.getTime()
+// );
+
+const oldExpiryDiffDays = existingMember.expiryDate
+    ? getISTDayDiff(existingMember.expiryDate)
+    : null;
+
+const wasActive =
+    oldExpiryDiffDays !== null && oldExpiryDiffDays >= 0;
 
   // Remove member from old plan
   await Plan.findByIdAndUpdate(
@@ -403,22 +418,41 @@ const deleteMember = async (req, res) => {
       });
     }
 
+// if (member.selectedPlanId) {
+//   const now = new Date();
+
+//   const isActive =
+//     member.expiryDate &&
+//     new Date(member.expiryDate).getTime() > now.getTime();
+
+//   await Plan.findByIdAndUpdate(
+//     member.selectedPlanId,
+//     {
+//       $inc: {
+//         memberCount: -1,
+//         activeMembers: isActive ? -1 : 0,
+//       },
+//     }
+//   );
+// }
+
 if (member.selectedPlanId) {
-  const now = new Date();
+    const expiryDiffDays = member.expiryDate
+        ? getISTDayDiff(member.expiryDate)
+        : null;
 
-  const isActive =
-    member.expiryDate &&
-    new Date(member.expiryDate).getTime() > now.getTime();
+    const isActive =
+        expiryDiffDays !== null && expiryDiffDays >= 0;
 
-  await Plan.findByIdAndUpdate(
-    member.selectedPlanId,
-    {
-      $inc: {
-        memberCount: -1,
-        activeMembers: isActive ? -1 : 0,
-      },
-    }
-  );
+    await Plan.findByIdAndUpdate(
+        member.selectedPlanId,
+        {
+            $inc: {
+                memberCount: -1,
+                activeMembers: isActive ? -1 : 0,
+            },
+        }
+    );
 }
 
     await member.deleteOne();
@@ -644,10 +678,16 @@ const renewMember = async (req, res) => {
 
 
 
-const wasExpired =
-  !member.expiryDate ||
-  new Date(member.expiryDate).getTime() <= now.getTime();
+// const wasExpired =
+//   !member.expiryDate ||
+//   new Date(member.expiryDate).getTime() <= now.getTime();
 
+const expiryDiffDays = member.expiryDate
+    ? getISTDayDiff(member.expiryDate)
+    : null;
+
+const wasExpired =
+    expiryDiffDays === null || expiryDiffDays < 0;
   const istNow = new Date(now.getTime() + IST_OFFSET_MS);
 
 const istToday = new Date(

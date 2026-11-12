@@ -33,24 +33,25 @@ function ViewMember() {
   //   return Math.ceil(diff / (1000 * 60 * 60 * 24));
   // };
 
+
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
 const calculateDaysLeft = (expiryDate) => {
   if (!expiryDate) return null;
 
+  const expiry = new Date(expiryDate);
+
+  if (isNaN(expiry.getTime())) return null;
+
   const now = new Date();
 
-  const istNow = new Date(
-    now.getTime() + IST_OFFSET_MS
-  );
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS);
 
   const todayIST = Date.UTC(
     istNow.getUTCFullYear(),
     istNow.getUTCMonth(),
     istNow.getUTCDate()
   );
-
-  const expiry = new Date(expiryDate);
 
   const expiryIST = new Date(
     expiry.getTime() + IST_OFFSET_MS
@@ -62,9 +63,8 @@ const calculateDaysLeft = (expiryDate) => {
     expiryIST.getUTCDate()
   );
 
-  return Math.ceil(
-    (expiryISTDate - todayIST) /
-      (1000 * 60 * 60 * 24)
+  return Math.round(
+    (expiryISTDate - todayIST) / (1000 * 60 * 60 * 24)
   );
 };
 
@@ -134,36 +134,36 @@ const calculateDaysLeft = (expiryDate) => {
 
   const totalCount = branchMembers.length;
 
-  const activeCount = branchMembers.filter((m) => {
-    if (!m.expiryDate) return false;
+const activeCount = branchMembers.filter((m) => {
+  const daysLeft = calculateDaysLeft(m.expiryDate);
 
-    const daysLeft = calculateDaysLeft(m.expiryDate);
-
-    return daysLeft >= 0;
-  }).length;
+  return daysLeft !== null && daysLeft > 7;
+}).length;
 
   const pendingCount = branchMembers.filter(
     (m) => m.paymentStatus === "Balance Pending",
   ).length;
 
-  const expiringCount = branchMembers.filter((m) => {
-    const daysLeft = calculateDaysLeft(m.expiryDate);
-    return daysLeft >= 0 && daysLeft <= 7;
-  }).length;
+const expiringCount = branchMembers.filter((m) => {
+  const daysLeft = calculateDaysLeft(m.expiryDate);
 
-  const expiredCount = branchMembers.filter((m) => {
-    const daysLeft = calculateDaysLeft(m.expiryDate);
+  return daysLeft !== null && daysLeft >= 0 && daysLeft <= 7;
+}).length;
 
-    return daysLeft < 0 && daysLeft >= -60;
-  }).length;
+const expiredCount = branchMembers.filter((m) => {
+  const daysLeft = calculateDaysLeft(m.expiryDate);
 
-  const inactiveCount = branchMembers.filter((m) => {
-    if (!m.expiryDate) return false;
+  return (
+    daysLeft === null ||
+    (daysLeft < 0 && daysLeft >= -60)
+  );
+}).length;
 
-    const daysLeft = calculateDaysLeft(m.expiryDate);
+const inactiveCount = branchMembers.filter((m) => {
+  const daysLeft = calculateDaysLeft(m.expiryDate);
 
-    return daysLeft < -60;
-  }).length;
+  return daysLeft !== null && daysLeft < -60;
+}).length;
 
   const expiringPercentage =
     totalCount > 0 ? ((expiringCount / totalCount) * 100).toFixed(2) : "0.00";
@@ -185,40 +185,41 @@ const calculateDaysLeft = (expiryDate) => {
     }
 
     switch (activeFilter) {
-      case "ACTIVE":
-        result = result.filter((m) => {
-          if (!m.expiryDate) return false;
+case "ACTIVE":
+  result = result.filter((m) => {
+    const daysLeft = calculateDaysLeft(m.expiryDate);
 
-          const daysLeft = calculateDaysLeft(m.expiryDate);
-
-          return daysLeft >= 0;
-        });
-        break;
+    return daysLeft !== null && daysLeft > 7;
+  });
+  break;
       case "PENDING":
         result = result.filter((m) => m.paymentStatus === "Balance Pending");
         break;
-      case "EXPIRING":
-        result = result.filter((m) => {
-          const daysLeft = calculateDaysLeft(m.expiryDate);
+case "EXPIRING":
+  result = result.filter((m) => {
+    const daysLeft = calculateDaysLeft(m.expiryDate);
 
-          return daysLeft >= 0 && daysLeft <= 7;
-        });
-        break;
-      case "EXPIRED":
-        result = result.filter((m) => {
-          const daysLeft = calculateDaysLeft(m.expiryDate);
+    return daysLeft !== null && daysLeft >= 0 && daysLeft <= 7;
+  });
+  break;
+case "EXPIRED":
+  result = result.filter((m) => {
+    const daysLeft = calculateDaysLeft(m.expiryDate);
 
-          return daysLeft < 0 && daysLeft >= -60;
-        });
-        break;
+    return (
+      daysLeft === null ||
+      (daysLeft < 0 && daysLeft >= -60)
+    );
+  });
+  break;
 
-      case "INACTIVE":
-        result = result.filter((m) => {
-          const daysLeft = calculateDaysLeft(m.expiryDate);
+case "INACTIVE":
+  result = result.filter((m) => {
+    const daysLeft = calculateDaysLeft(m.expiryDate);
 
-          return daysLeft < -60;
-        });
-        break;
+    return daysLeft !== null && daysLeft < -60;
+  });
+  break;
       default:
         break;
     }
@@ -247,44 +248,50 @@ const calculateDaysLeft = (expiryDate) => {
     setCurrentPage(1);
   }, [searchQuery, activeFilter, currentBranch]);
 
-  const renderStatusBadge = (status, daysLeft) => {
-    const days = parseInt(daysLeft);
-
-    if (days < -60) {
-      return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-          Inactive
-        </span>
-      );
-    }
-
-    if (days < 0) {
-      return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-          Expired
-        </span>
-      );
-    }
-
-
-    if (days <= 7) {
-      return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
-          <FiAlertCircle size={10} />
-          Expiring Soon
-        </span>
-      );
-    }
-
+const renderStatusBadge = (status, daysLeft) => {
+  if (daysLeft === null) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        Active
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+        Expired
       </span>
     );
-  };
+  }
+
+  if (daysLeft < -60) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+        Inactive
+      </span>
+    );
+  }
+
+  if (daysLeft < 0) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+        Expired
+      </span>
+    );
+  }
+
+  if (daysLeft <= 7) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
+        <FiAlertCircle size={10} />
+        Expiring Soon
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
+      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+      Active
+    </span>
+  );
+};
   const membersTableRef = useRef(null);
 
   const handleMembersTableDrag = (e) => {
@@ -612,15 +619,23 @@ const calculateDaysLeft = (expiryDate) => {
                       <p className="text-[11px] font-semibold text-slate-700">
                         {formatDate(member.expiryDate)}
                       </p>
-                      <p
-                        className={`text-[9px] font-bold ${daysLeft < -60 ? "text-slate-400" : daysLeft < 0 ? "text-rose-500" : daysLeft <= 7 ? "text-amber-500" : "text-emerald-500"}`}
-                      >
-                        {daysLeft < -60
-                          ? `Inactive ${Math.abs(daysLeft)}d`
-                          : daysLeft < 0
-                            ? `${Math.abs(daysLeft)}d Ago`
-                            : `${daysLeft} Days Left`}
-                      </p>
+             <p
+  className={`text-[9px] font-bold ${
+    daysLeft === null || daysLeft < 0
+      ? "text-rose-500"
+      : daysLeft <= 7
+        ? "text-amber-500"
+        : "text-emerald-500"
+  }`}
+>
+  {daysLeft === null
+    ? "No expiry date"
+    : daysLeft < -60
+      ? `Inactive ${Math.abs(daysLeft)}d`
+      : daysLeft < 0
+        ? `${Math.abs(daysLeft)}d Ago`
+        : `${daysLeft} Days Left`}
+</p>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
