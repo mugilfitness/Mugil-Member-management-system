@@ -172,7 +172,7 @@ const getMemberStatus = (expiryDate) => {
 
   if (daysLeft === null) return "Inactive";
 
-  if (daysLeft < -180) return "Inactive";
+  if (daysLeft < -60) return "Inactive";
 
   if (daysLeft < 0) return "Expired";
 
@@ -185,7 +185,7 @@ const getDaysLeftText = (expiryDate) => {
 
   if (daysLeft === null) return "No expiry date";
 
-  if (daysLeft < -180) {
+  if (daysLeft < -60) {
     return `Inactive • ${Math.abs(daysLeft)} days ago`;
   }
 

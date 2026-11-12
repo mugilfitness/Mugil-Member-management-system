@@ -103,6 +103,14 @@ const REPORT_CARDS = [
    api: "/api/v1/reports/expired-members",
     type: "expired-members",
   },
+  {
+  id: "DOC_05",
+  name: "Inactive Members",
+  desc: "Members expired more than 60 days.",
+  icon: <FiRefreshCw />,
+  api: "/api/v1/reports/inactive-members",
+  type: "inactive-members",
+},
 ];
 
 const METRIC_CARDS = [
@@ -530,7 +538,7 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
       (today - new Date(m.expiryDate)) / 86400000
     );
 
-    return diff > 7;
+    return diff >= 8 && diff <= 60;
   }).length;
 
   return [
@@ -559,7 +567,7 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
       value_c: [99,56,6],
     },
     {
-      label: "Expired (8+ Days)",
+      label: "Expired (8–60 Days)",
       value: `${expiredOlder}`,
       bgColor: [234,243,222],
       border: [151,196,89],

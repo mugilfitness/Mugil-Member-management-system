@@ -13,6 +13,7 @@ const {
   getBranchRevenueReport,
   getActiveBranchesReport,
   getAllMembersReport,
+  getInactiveMembersReport,
   
 } = require("../controllers/reportController");
 
@@ -37,6 +38,12 @@ router.get(
   "/expired-members",
   verifyToken,
   getExpiredMembersReport
+);
+
+router.get(
+  "/inactive-members",
+  verifyToken,
+  getInactiveMembersReport
 );
 
 

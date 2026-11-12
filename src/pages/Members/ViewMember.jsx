@@ -154,7 +154,7 @@ const calculateDaysLeft = (expiryDate) => {
   const expiredCount = branchMembers.filter((m) => {
     const daysLeft = calculateDaysLeft(m.expiryDate);
 
-    return daysLeft < 0 && daysLeft >= -180;
+    return daysLeft < 0 && daysLeft >= -60;
   }).length;
 
   const inactiveCount = branchMembers.filter((m) => {
@@ -162,7 +162,7 @@ const calculateDaysLeft = (expiryDate) => {
 
     const daysLeft = calculateDaysLeft(m.expiryDate);
 
-    return daysLeft < -180;
+    return daysLeft < -60;
   }).length;
 
   const expiringPercentage =
@@ -208,7 +208,7 @@ const calculateDaysLeft = (expiryDate) => {
         result = result.filter((m) => {
           const daysLeft = calculateDaysLeft(m.expiryDate);
 
-          return daysLeft < 0 && daysLeft >= -180;
+          return daysLeft < 0 && daysLeft >= -60;
         });
         break;
 
@@ -216,7 +216,7 @@ const calculateDaysLeft = (expiryDate) => {
         result = result.filter((m) => {
           const daysLeft = calculateDaysLeft(m.expiryDate);
 
-          return daysLeft < -180;
+          return daysLeft < -60;
         });
         break;
       default:
@@ -250,7 +250,7 @@ const calculateDaysLeft = (expiryDate) => {
   const renderStatusBadge = (status, daysLeft) => {
     const days = parseInt(daysLeft);
 
-    if (days < -180) {
+    if (days < -60) {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
@@ -503,7 +503,7 @@ const calculateDaysLeft = (expiryDate) => {
             </h3>
 
             <p className="text-[10px] text-slate-500 font-bold">
-              No Renewal (180+ Days)
+              No Renewal (60+ Days)
             </p>
           </div>
 
@@ -613,9 +613,9 @@ const calculateDaysLeft = (expiryDate) => {
                         {formatDate(member.expiryDate)}
                       </p>
                       <p
-                        className={`text-[9px] font-bold ${daysLeft < -180 ? "text-slate-400" : daysLeft < 0 ? "text-rose-500" : daysLeft <= 7 ? "text-amber-500" : "text-emerald-500"}`}
+                        className={`text-[9px] font-bold ${daysLeft < -60 ? "text-slate-400" : daysLeft < 0 ? "text-rose-500" : daysLeft <= 7 ? "text-amber-500" : "text-emerald-500"}`}
                       >
-                        {daysLeft < -180
+                        {daysLeft < -60
                           ? `Inactive ${Math.abs(daysLeft)}d`
                           : daysLeft < 0
                             ? `${Math.abs(daysLeft)}d Ago`

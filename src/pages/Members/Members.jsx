@@ -109,7 +109,7 @@ function Members() {
       statusFilter === "All" ||
       (statusFilter === "Paid" && m.paymentStatus === "Fully Paid") ||
       (statusFilter === "Pending" && m.paymentStatus === "Balance Pending") ||
-      (statusFilter === "Expired" && calculateDaysLeft(m.expiryDate) < 0 && calculateDaysLeft(m.expiryDate) >= -180) ||
+      (statusFilter === "Expired" && calculateDaysLeft(m.expiryDate) < 0 && calculateDaysLeft(m.expiryDate) >= -60) ||
       (statusFilter === "1 Month" && m.duration === "1 Month") ||
       (statusFilter === "3 Months" && m.duration === "3 Months") ||
       (statusFilter === "6 Months" && m.duration === "6 Months") ||
@@ -506,7 +506,7 @@ function Members() {
     const daysLeft = calculateDaysLeft(m.expiryDate);
 
     const displayStatus =
-      daysLeft < -180
+      daysLeft < -60
         ? "Inactive"
         : daysLeft < 0
           ? "Expired"

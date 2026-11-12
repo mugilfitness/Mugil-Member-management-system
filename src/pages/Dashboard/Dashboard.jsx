@@ -116,10 +116,10 @@ const activeMembers = activeBranchMembers.filter((m) => {
     return d <= 7 && d >= 0;
   }).length;
 
-  /* Expired: 1–180 days past expiry */
+  /* Expired: 1–60 days past expiry */
   const expiredMembers = activeBranchMembers.filter((m) => {
     const d = getDaysLeft(m.expiryDate);
-    return d < 0 && d >= -180;
+    return d < 0 && d >= -60;
   }).length;
 
   const monthlyIncome = activeBranchMembers.reduce(
@@ -596,7 +596,7 @@ const pendingCount = allPendingMembers.length;
                   </span>
                 </div>
                 <p className="text-[10px] font-semibold text-slate-400 px-1">
-                  Lapsed memberships ≤ 180 days
+                  Lapsed memberships ≤ 60 days
                 </p>
               </div>
 

@@ -531,7 +531,7 @@ const overdueMembers = transactions.filter((member) => {
     (todayISTDate - expiryISTDate) / (1000 * 60 * 60 * 24)
   );
 
-  return daysOverdue > 0 && daysOverdue <= 180;
+  return daysOverdue > 0 && daysOverdue <= 60;
 }).length;
 
 const totalExpiredMembers = transactions.filter((member) => {

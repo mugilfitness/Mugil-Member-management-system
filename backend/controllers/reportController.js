@@ -418,7 +418,7 @@ const members = (await Member.find(filter).lean())
     const diffDays =
       (expiryDate - today) / 86400000;
 
-    return diffDays < 0;
+    return diffDays <= -1 && diffDays >= -60;
   })
       .sort(
         (a, b) =>
@@ -448,6 +448,57 @@ const members = (await Member.find(filter).lean())
     });
   }
 };
+
+const getInactiveMembersReport = async (req, res) => {
+  try {
+    const { branch } = req.query;
+
+    const filter = {};
+
+    if (branch && branch !== "ALL_BRANCHES") {
+      filter.branch = branch;
+    }
+
+    const today = getISTDateOnly(new Date());
+
+    const members = (await Member.find(filter).lean())
+      .filter((member) => {
+        if (!member.expiryDate) return false;
+
+        const expiryDate = getISTDateOnly(member.expiryDate);
+
+        const diffDays = (expiryDate - today) / 86400000;
+
+        return diffDays < -60;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.expiryDate) - new Date(b.expiryDate)
+      )
+      .map((member) => ({
+        memberId: member.memberId,
+        fullName: member.fullName,
+        mobile: member.mobile,
+        branch: member.branch,
+        expiryDate: member.expiryDate,
+        status: "Inactive",
+      }));
+
+    res.status(200).json({
+      success: true,
+      count: members.length,
+      data: members,
+    });
+  } catch (error) {
+    console.error("[getInactiveMembersReport]", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // ─── Pending Fees ─────────────────────────────────────────────────────────────
 
 const getPendingFeesReport = async (req, res) => {
@@ -884,4 +935,5 @@ module.exports = {
   getActiveBranchesReport,
   getAllMembersReport,
   getExpiredMembersReport,
+    getInactiveMembersReport,
 };
