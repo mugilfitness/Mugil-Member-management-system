@@ -657,6 +657,31 @@ const buildSummaryBoxes = (rows, reportType, period = "today") => {
       },
     ];
   }
+
+
+  // ── INACTIVE MEMBERS ─────────────────────────────
+if (reportType === "inactive-members") {
+  const totalInactive = rows.length;
+
+  return [
+    {
+      label: "Total Records",
+      value: `${totalInactive}`,
+      bgColor: [230, 241, 251],
+      border: [133, 183, 235],
+      label_c: [24, 95, 165],
+      value_c: [12, 68, 124],
+    },
+    {
+      label: "Inactive Members",
+      value: `${totalInactive}`,
+      bgColor: [252, 235, 235],
+      border: [240, 149, 149],
+      label_c: [163, 45, 45],
+      value_c: [121, 31, 31],
+    },
+  ];
+}
   // ── FALLBACK (generic) ─────────────────────────────────────────────────────
   const totalMembers = rows.length;
   const totalCollected = rows.reduce(

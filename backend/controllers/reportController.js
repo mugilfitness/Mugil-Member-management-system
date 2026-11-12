@@ -349,8 +349,8 @@ const members = (await Member.find(filter).lean())
   })
       .sort(
         (a, b) =>
-          new Date(a.expiryDate) -
-          new Date(b.expiryDate)
+          new Date(b.expiryDate) -
+          new Date(a.expiryDate)
       )
       .map((member) => ({
         memberId: member.memberId,
@@ -418,12 +418,12 @@ const members = (await Member.find(filter).lean())
     const diffDays =
       (expiryDate - today) / 86400000;
 
-    return diffDays <= -1 && diffDays >= -60;
+    return diffDays <= 0 && diffDays >= -60;
   })
       .sort(
         (a, b) =>
-          new Date(a.expiryDate) -
-          new Date(b.expiryDate)
+          new Date(b.expiryDate) -
+          new Date(a.expiryDate)
       )
       .map((member) => ({
         memberId: member.memberId,
@@ -473,7 +473,7 @@ const getInactiveMembersReport = async (req, res) => {
       })
       .sort(
         (a, b) =>
-          new Date(a.expiryDate) - new Date(b.expiryDate)
+          new Date(b.expiryDate) - new Date(a.expiryDate)
       )
       .map((member) => ({
         memberId: member.memberId,
