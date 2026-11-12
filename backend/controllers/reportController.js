@@ -131,10 +131,10 @@ const expiringMembers = members.filter((member) => {
     );
 
 
-
-    const todayCollection =
-      finance.collection;
-
+const todayCollection = calculateFinance(
+  members,
+  period
+).collection;
 
     
 const newMembers = members.filter((member) =>
